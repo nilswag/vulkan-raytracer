@@ -1,9 +1,12 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 typedef struct
 {
 	GLFWwindow* window;
+	VkInstance instance;
+
 	int width, height;
 } App;
 

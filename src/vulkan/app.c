@@ -4,5 +4,5 @@
 
 void vulkan_app_init(App* self)
 {
-	if (glfwInit()) FATAL("Unable to initialize GLFW\n");
+	if (glfwInit()) FATAL("Unable to initialize GLFW");
 }

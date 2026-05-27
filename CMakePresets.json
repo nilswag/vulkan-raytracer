@@ -1,0 +1,29 @@
+{
+     "version": 9,
+     "cmakeMinimumRequired": {
+          "major": 4,
+          "minor": 2
+     },
+  "configurePresets": [
+    {
+      "name": "configure debug",
+      "binaryDir": "build",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+    },
+    {
+      "name": "configure release",
+      "binaryDir": "build",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build debug",
+      "configurePreset": "configure debug"
+    },
+    {
+      "name": "build release",
+      "configurePreset": "configure release"
+    }
+  ]
+}

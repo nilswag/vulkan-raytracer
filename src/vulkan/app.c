@@ -1,3 +1,4 @@
+#include <stdint.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include "app.h"
@@ -14,6 +15,32 @@ void vulkan_app_init(App* s, int width, int height, const char* title)
 	s->height = height;
 
 	if (!s->window) FATAL("Unable to initialize GLFW window");
+
+	// vulkan stuff
+
+	// === instance setup ===
+	VkApplicationInfo app_info = {
+		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		.pApplicationName = title,
+		.apiVersion = VK_API_VERSION_1_3	
+	};
+
+	// get amount and names of enabled extensions
+	uint32_t extension_count;
+	const char** extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+
+	// vulkan instance create info
+	VkInstanceCreateInfo instance_ci = {
+		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+		.pApplicationInfo = &app_info,
+		.enabledExtensionCount = extension_count,
+		.ppEnabledExtensionNames = extensions
+	};
+
+	if (vkCreateInstance(&instance_ci, NULL, &s->instance) != VK_SUCCESS)
+		FATAL("Unable to create vulkan instance");
+	TRACE("Created vulkan instance");
+	// ===============================
 
 	DEBUG("Initialized Vulkan app");
 }

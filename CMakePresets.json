@@ -8,7 +8,7 @@
     {
       "name": "configure debug",
       "binaryDir": "build",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "configure release",

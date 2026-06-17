@@ -5,7 +5,7 @@ find_package(Vulkan REQUIRED)
 
 add_subdirectory(third_party/glfw)
 
-file(GLOB_RECURSE SOURCES src/*.c)
+file(GLOB_RECURSE SOURCES src/*.c src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 

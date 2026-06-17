@@ -1,8 +1,16 @@
-#include <cstdlib>
-#include "util/log.h"
+#include <print>
 
 int main()
 {
-	INFO("Hello World!");
+	try
+	{
+		throw std::exception("Hello World!");
+	}
+	catch(const std::exception& e)
+	{
+		std::println(stderr, "Error: {}", e.what());
+		return EXIT_FAILURE;
+	}
+
 	return EXIT_SUCCESS;
 }

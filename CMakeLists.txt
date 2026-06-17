@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 4.2)
 project(vulkan-leren)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
 find_package(Vulkan REQUIRED)
 
 add_subdirectory(third_party/glfw)
 
-file(GLOB_RECURSE SOURCES src/*.c src/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 

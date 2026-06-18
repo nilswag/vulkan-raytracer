@@ -2,6 +2,7 @@
 #include <string>
 #include <print>
 #include <format>
+#include <ctime>
 
 namespace logger
 {
@@ -29,7 +30,16 @@ namespace logger
                case LogLevel::TRACE: prefix = "\033[0;35m[TRACE]"; break;
           }
 
-          std::println("{} {} {}\033[0m", __TIME__, prefix, std::format(msg, std::forward<Args>(args)...));
+          const std::time_t now = std::time(nullptr);
+          const std::tm* local_time = std::localtime(&now);
+
+          std::println("{}:{}:{}:{} {} {}\033[0m", 
+               local_time->tm_hour,
+               local_time->tm_min,
+               local_time->tm_sec,
+               prefix, 
+               std::format(msg, std::forward<Args>(args)...)
+          );
      }
 
      template<typename... Args>

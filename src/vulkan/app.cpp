@@ -14,7 +14,7 @@ void App::init_instance()
           .apiVersion = VK_API_VERSION_1_3
      };
 
-     std::uint32_t extension_count = 0;
+     uint32_t extension_count = 0;
      const char** extensions = glfwGetRequiredInstanceExtensions(&extension_count);
      logger::trace("found {} instance extensions:", extension_count);
      for (int i = 0; i < extension_count; i++)
@@ -34,7 +34,7 @@ void App::init_instance()
 
 void App::init_device()
 {
-     std::uint32_t device_count = 0;
+     uint32_t device_count = 0;
      if (vkEnumeratePhysicalDevices(instance, &device_count, nullptr) != VK_SUCCESS)
           logger::fatal("unable to enumerate physical devices");
      
@@ -43,7 +43,7 @@ void App::init_device()
           logger::fatal("unable to enumerate physical devices");
 
      // what physical device to use (default = 0)
-     std::uint32_t device_index = 0;
+     uint32_t device_index = 0;
      VkPhysicalDeviceProperties2 device_properties = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
      vkGetPhysicalDeviceProperties2(devices[device_index], &device_properties);
      logger::debug("device name: {}", device_properties.properties.deviceName);

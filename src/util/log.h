@@ -29,7 +29,7 @@ namespace logger
                case LogLevel::TRACE: prefix = "\033[0;35m[TRACE]"; break;
           }
 
-          std::println("{}\t{}\033[0m", prefix, std::format(msg, std::forward<Args>(args)...));
+          std::println("{} {} {}\033[0m", __TIME__, prefix, std::format(msg, std::forward<Args>(args)...));
      }
 
      template<typename... Args>

@@ -35,37 +35,37 @@ namespace logger
      template<typename... Args>
      inline void fatal(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::FATAL, msg, args...);
+          out(LogLevel::FATAL, msg, std::forward<Args>(args)...);
           throw std::exception();
      }
 
      template<typename... Args>
      inline void error(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::ERROR, msg, args...);
+          out(LogLevel::ERROR, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
      inline void warn(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::WARN, msg, args...);
+          out(LogLevel::WARN, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
      inline void info(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::INFO, msg, args...);
+          out(LogLevel::INFO, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
      inline void debug(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::DEBUG, msg, args...);
+          out(LogLevel::DEBUG, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
      inline void trace(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::TRACE, msg, args...);
+          out(LogLevel::TRACE, msg, std::forward<Args>(args)...);
      }
 }

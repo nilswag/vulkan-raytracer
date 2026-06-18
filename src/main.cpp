@@ -1,16 +1,12 @@
 #include <cstdlib>
-#include "util/log.h"
+#include "vulkan/app.h"
 
 int main()
 {
 	try
 	{
-		logger::trace("Hello World!");
-		logger::debug("Hello World!");
-		logger::info("Hello World!");
-		logger::warn("Hello World!");
-		logger::error("Hello World!");
-		logger::fatal("Hello World!");
+		App app(1000, 1000, "vulkan app");
+		app.run();
 	}
 	catch (const std::exception& e)
 	{

@@ -16,4 +16,6 @@ private:
      GLFWwindow* window;
      VkInstance instance;
 
+     size_t ticks = 0;
+     double dt = 0.0;
 };

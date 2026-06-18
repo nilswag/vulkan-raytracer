@@ -8,7 +8,7 @@ find_package(Vulkan REQUIRED)
 
 add_subdirectory(third_party/glfw)
 
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 

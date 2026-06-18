@@ -33,7 +33,7 @@ namespace logger
           const std::time_t now = std::time(nullptr);
           const std::tm* local_time = std::localtime(&now);
 
-          std::println("{}:{}:{}:{} {} {}\033[0m", 
+          std::println("{}:{}:{} {} {}\033[0m", 
                local_time->tm_hour,
                local_time->tm_min,
                local_time->tm_sec,

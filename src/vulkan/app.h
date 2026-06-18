@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 class App
 {
@@ -13,5 +14,6 @@ public:
 
 private:
      GLFWwindow* window;
+     VkInstance instance;
 
 };

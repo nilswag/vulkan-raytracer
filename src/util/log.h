@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
 #include <print>
+#include <format>
 
-namespace log
+namespace logger
 {
      enum class LogLevel
      {
@@ -12,41 +13,59 @@ namespace log
           INFO,
           DEBUG,
           TRACE
+     };
+
+     template<typename... Args>
+     inline void out(const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
+     {
+          std::string prefix = "";
+          switch (level)
+          {
+               case LogLevel::FATAL: prefix = "\033[0;31m[FATAL]"; break;
+               case LogLevel::ERROR: prefix = "\033[0;31m[ERROR]"; break;
+               case LogLevel::WARN:  prefix = "\033[0;33m[WARN]";  break;
+               case LogLevel::INFO:  prefix = "\033[1;37m[INFO]";  break;
+               case LogLevel::DEBUG: prefix = "\033[0;36m[DEBUG]"; break;
+               case LogLevel::TRACE: prefix = "\033[0;35m[TRACE]"; break;
+          }
+
+          std::println("{:4} {}\033[0m", prefix, std::format(msg, std::forward<Args>(args)...));
      }
 
-     template<typename T, Args... args>
-     inline void log(LogLevel& level, const std::string& fmt, Args... args)
+     template<typename... Args>
+     inline void fatal(const std::format_string<Args...> msg, Args&&... arg)
      {
-          
+          out(LogLevel::FATAL, msg, std::forward(args));
+          throw std::exception();
      }
 
-     inline void fatal()
+     template<typename... Args>
+     inline void error(const std::format_string<Args...> msg, Args&&... ar)
      {
-
+          out(LogLevel::ERROR, msg, std::forward(args));
      }
 
-     inline void error()
+     template<typename... Args>
+     inline void warn(const std::format_string<Args...> msg, Args&&... ar)
      {
-
+          out(LogLevel::WARN, msg, std::forward(args));
      }
 
-     inline void warn()
+     template<typename... Args>
+     inline void info(const std::format_string<Args...> msg, Args&&... ar)
      {
-
+          out(LogLevel::INFO, msg, std::forward(args));
      }
 
-     inline void info()
+     template<typename... Args>
+     inline void debug(const std::format_string<Args...> msg, Args&&... ar)
      {
-
+          out(LogLevel::DEBUG, msg, std::forward(args));
      }
 
-     inline void debug()
+     template<typename... Args>
+     inline void trace(const std::format_string<Args...> msg, Args&&... ar)
      {
-
-     }
-
-     inline void trace()
-     {
-          
+          out(LogLevel::TRACE, msg, std::forward(args));
      }
 }

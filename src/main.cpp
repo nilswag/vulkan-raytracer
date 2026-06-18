@@ -1,16 +1,9 @@
-#include <print>
+#include <cstdlib>
+#include "util/log.h"
 
 int main()
 {
-	try
-	{
-		throw std::exception("Hello World!");
-	}
-	catch(const std::exception& e)
-	{
-		std::println(stderr, "Error: {}", e.what());
-		return EXIT_FAILURE;
-	}
+	logger::out(logger::LogLevel::DEBUG, "aaa {}", 123);
 
 	return EXIT_SUCCESS;
 }

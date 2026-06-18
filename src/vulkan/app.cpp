@@ -1,11 +1,61 @@
 #include <string>
 #include <cstdint>
+#include <vector>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include "app.h"
 #include "../util/log.h"
 
+void App::init_instance()
+{
+     VkApplicationInfo app_info = {
+          .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+          .pApplicationName = title.c_str(),
+          .apiVersion = VK_API_VERSION_1_3
+     };
+
+     std::uint32_t extension_count = 0;
+     const char** extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+     logger::trace("found {} instance extensions:", extension_count);
+     for (int i = 0; i < extension_count; i++)
+          logger::trace("  [{}] = {}", i, extensions[i]);
+
+     VkInstanceCreateInfo instance_ci = {
+          .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+          .pApplicationInfo = &app_info,
+          .enabledExtensionCount = extension_count,
+          .ppEnabledExtensionNames = extensions
+     };
+
+     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
+          logger::fatal("unable to initialize vulkan instance");
+     logger::trace("initialized vulkan instance");
+}
+
+void App::init_device()
+{
+     std::uint32_t device_count = 0;
+     if (vkEnumeratePhysicalDevices(instance, &device_count, nullptr) != VK_SUCCESS)
+          logger::fatal("unable to enumerate physical devices");
+     
+     std::vector<VkPhysicalDevice> devices(device_count);
+     if (vkEnumeratePhysicalDevices(instance, &device_count, devices.data()) != VK_SUCCESS)
+          logger::fatal("unable to enumerate physical devices");
+
+     // what physical device to use (default = 0)
+     std::uint32_t device_index = 0;
+     VkPhysicalDeviceProperties2 device_properties = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
+     vkGetPhysicalDeviceProperties2(devices[device_index], &device_properties);
+     logger::debug("device name: {}", device_properties.properties.deviceName);
+     logger::debug("device api version: {}", device_properties.properties.apiVersion);
+     logger::debug("device driver version: {}", device_properties.properties.driverVersion);
+     logger::debug("device vendor id: {}", device_properties.properties.vendorID);
+
+     logger::trace("initialized vulkan device");
+}
+
 App::App(int width, int height, const std::string& title)
+     : width(width), height(height), title(title)
 {
      if (!glfwInit())
           logger::fatal("unable to initialize glfw");
@@ -18,17 +68,8 @@ App::App(int width, int height, const std::string& title)
      logger::trace("glfw window initialized ({}x{})", width, height);
 
      // vulkan stuff
-     VkApplicationInfo app_info = {
-          .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-          .pApplicationName = title.c_str(),
-          .apiVersion = VK_API_VERSION_1_3
-     };
-
-     std::uint32_t count = 0;
-     const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-     logger::trace("found {} instance extensions:", count);
-     for (int i = 0; i < count; i++)
-          logger::trace("  [{}] = {}", i, extensions[i]);
+     init_instance();
+     init_device();
 
      logger::debug("initialized vulkan app");
 }

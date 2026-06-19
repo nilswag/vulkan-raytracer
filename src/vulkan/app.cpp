@@ -1,11 +1,53 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <functional>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include "app.h"
 #include "../util/log.h"
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback(
+     VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+    void* user_data
+)
+{
+     std::string type_str;
+     switch (type)
+     {
+          case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:     type_str = "GENERAL";     break;
+          case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:  type_str = "VALIDATION";  break;
+          case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT: type_str = "PERFORMANCE"; break;
+          default: type_str = "MISC"; break;
+     }
+
+     switch (severity)
+     {
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+          logger::trace("vulkan diagnostic ({}): {}", type_str, callback_data->pMessage);
+          break;
+
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+          logger::debug("vulkan info ({}): {}", type_str, callback_data->pMessage);
+          break;
+
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+          logger::warn("vulkan warning ({}): {}", type_str, callback_data->pMessage);
+          break;
+
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+          logger::error("vulkan error ({}): {}", type_str, callback_data->pMessage);
+
+          default:
+          logger::debug("vulkan misc ({})S: {}", type_str, callback_data);
+          break;
+     }
+
+     return VK_FALSE;
+}
 
 void App::init_validation_layers()
 {

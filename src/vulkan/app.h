@@ -23,6 +23,7 @@ private:
      double dt = 0.0;
 
      void init_validation_layers();
+     void init_debug_messenger();
      void init_instance();
      void init_device();
 };

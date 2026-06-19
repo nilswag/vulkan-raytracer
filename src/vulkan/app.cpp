@@ -72,6 +72,36 @@ void App::init_validation_layers()
      }
 }
 
+static PFN_vkCreateDebugUtilsMessengerEXT create_debug_utils_messenger_ext(
+     VkInstance instance, 
+     const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
+     const VkAllocationCallbacks* pAllocator, 
+     VkDebugUtilsMessengerEXT* pDebugMessenger
+)
+{
+
+}
+
+void App::init_debug_messenger()
+{
+     VkDebugUtilsMessengerEXT debug_messenger;
+     VkDebugUtilsMessengerCreateInfoEXT create_info = {
+          .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+          .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT,
+          .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT,
+          .pfnUserCallback = vulkan_debug_callback,
+          .pUserData = nullptr
+     };
+
+     PFN_vkCreateDebugUtilsMessengerEXT create_func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+     if (create_func == nullptr)
+          logger::fatal("vulkan debug messenger extension not present");
+     if (create_func(instance, &create_info, nullptr, &debug_messenger) != VK_SUCCESS)
+          logger::fatal("unable to set up vulkan debug messenger");
+
+     logger::trace("initialized vulkan debug messenger");
+}
+
 void App::init_instance()
 {
      VkApplicationInfo app_info = {
@@ -101,6 +131,7 @@ void App::init_instance()
 
      if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
           logger::fatal("unable to initialize vulkan instance");
+
      logger::trace("initialized vulkan instance");
 }
 
@@ -171,6 +202,8 @@ App::~App()
 {
      glfwDestroyWindow(window);
      glfwTerminate();
+
+
 
      logger::debug("deinitialized vulkan app");
 }

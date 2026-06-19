@@ -24,25 +24,27 @@ namespace logger
                return;
           #endif
 
-          std::string prefix = "";
+          std::string color;
+          std::string label;
           switch (level)
           {
-               case LogLevel::FATAL: prefix = "\033[0;31m[FATAL]"; break;
-               case LogLevel::ERROR: prefix = "\033[0;31m[ERROR]"; break;
-               case LogLevel::WARN:  prefix = "\033[0;33m[WARN]";  break;
-               case LogLevel::INFO:  prefix = "\033[0;37m[INFO]";  break;
-               case LogLevel::DEBUG: prefix = "\033[0;36m[DEBUG]"; break;
-               case LogLevel::TRACE: prefix = "\033[0;35m[TRACE]"; break;
+               case LogLevel::FATAL: color = "\033[0;31m"; label = "[FATAL]"; break;
+               case LogLevel::ERROR: color = "\033[0;31m"; label = "[ERROR]"; break;
+               case LogLevel::WARN:  color = "\033[0;33m"; label = "[WARN]";  break;
+               case LogLevel::INFO:  color = "\033[0;37m"; label = "[INFO]";  break;
+               case LogLevel::DEBUG: color = "\033[0;36m"; label = "[DEBUG]"; break;
+               case LogLevel::TRACE: color = "\033[0;35m"; label = "[TRACE]"; break;
           }
-
+          
           const std::time_t now = std::time(nullptr);
           const std::tm* local_time = std::localtime(&now);
 
-          std::println("{}:{}:{} {}\t{}\033[0m", 
+          std::println("{:02}:{:02}:{:02} {}{:<7} {}\033[0m", 
                local_time->tm_hour,
                local_time->tm_min,
                local_time->tm_sec,
-               prefix, 
+               color,
+               label, 
                std::format(msg, std::forward<Args>(args)...)
           );
      }

@@ -105,7 +105,7 @@ void App::run()
           if (timer >= 1.0f)
           {
                timer = 0.0f;
-               logger::info("dt: {:.3f}ms\t fps: {}\t ticks: {}", dt * 1e3, fps_counter, ticks);
+               logger::info("dt: {:.3f}ms fps: {} ticks: {}", dt * 1e3, fps_counter, ticks);
                fps_counter = 0;
           }
 

@@ -7,6 +7,29 @@
 #include "app.h"
 #include "../util/log.h"
 
+void App::init_validation_layers()
+{
+     // list of wanted validation layers
+     const std::vector<const char*> required_layers = {
+          "VK_LAYER_KHRONOS_validation"
+     };
+
+     uint32_t layer_count = 0;
+     vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+     std::vector<VkLayerProperties> available_layers(layer_count);
+     vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
+
+     for (const char* layer_name : required_layers)
+     {
+          auto it = std::find_if(available_layers.begin(), available_layers.end(), [layer_name](const auto& layer_properties){
+               return strcmp(layer_name, layer_properties.layerName) == 0;
+          });
+
+          if (it == available_layers.end())
+               logger::fatal("unsupported validation layer found ({})", layer_name);
+     }
+}
+
 void App::init_instance()
 {
      VkApplicationInfo app_info = {
@@ -16,16 +39,22 @@ void App::init_instance()
      };
 
      uint32_t extension_count = 0;
-     const char** extensions = glfwGetRequiredInstanceExtensions(&extension_count);
-     logger::trace("found {} instance extensions:", extension_count);
+     const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+     std::vector<const char*> required_extensions(glfw_extensions, glfw_extensions + extension_count);
+
+     #ifdef _DEBUG
+     required_extensions.push_back("VK_EXT_debug_utils");
+     #endif
+
+     logger::trace("found {} required extensions:", extension_count);
      for (int i = 0; i < extension_count; i++)
-          logger::trace("  [{}] = {}", i, extensions[i]);
+          logger::trace("  [{}] = {}", i, required_extensions[i]);
 
      VkInstanceCreateInfo instance_ci = {
           .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
           .pApplicationInfo = &app_info,
-          .enabledExtensionCount = extension_count,
-          .ppEnabledExtensionNames = extensions
+          .enabledExtensionCount = required_extensions.size(),
+          .ppEnabledExtensionNames = required_extensions.data()
      };
 
      if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
@@ -89,6 +118,7 @@ App::App(int width, int height, const std::string& title)
      logger::trace("glfw window initialized ({}x{})", width, height);
 
      // vulkan stuff
+     init_validation_layers();
      init_instance();
      init_device();
 

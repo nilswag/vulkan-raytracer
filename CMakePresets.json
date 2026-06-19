@@ -19,11 +19,11 @@
   "buildPresets": [
     {
       "name": "debug",
-      "configurePreset": "configure debug"
+      "configurePreset": "debug"
     },
     {
       "name": "release",
-      "configurePreset": "configure release"
+      "configurePreset": "release"
     }
   ]
 }

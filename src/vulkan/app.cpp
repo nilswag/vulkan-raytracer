@@ -1,5 +1,6 @@
 #include <string>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include <functional>
 #define GLFW_INCLUDE_VULKAN
@@ -42,7 +43,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback(
           logger::error("vulkan error ({}): {}", type_str, callback_data->pMessage);
 
           default:
-          logger::debug("vulkan misc ({})S: {}", type_str, callback_data);
+          logger::debug("vulkan misc ({})S: {}", type_str, callback_data->pMessage);
           break;
      }
 
@@ -72,14 +73,17 @@ void App::init_validation_layers()
      }
 }
 
-static PFN_vkCreateDebugUtilsMessengerEXT create_debug_utils_messenger_ext(
+static VkResult create_debug_utils_messenger_ext(
      VkInstance instance, 
-     const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
-     const VkAllocationCallbacks* pAllocator, 
-     VkDebugUtilsMessengerEXT* pDebugMessenger
+     const VkDebugUtilsMessengerCreateInfoEXT* create_info, 
+     const VkAllocationCallbacks* allocator, 
+     VkDebugUtilsMessengerEXT* debug_messenger
 )
 {
-
+     PFN_vkCreateDebugUtilsMessengerEXT create_func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+     if (create_func == nullptr)
+          logger::fatal("vulkan debug messenger extension not present");
+     return create_func(instance, create_info, allocator, debug_messenger);
 }
 
 void App::init_debug_messenger()
@@ -87,16 +91,18 @@ void App::init_debug_messenger()
      VkDebugUtilsMessengerEXT debug_messenger;
      VkDebugUtilsMessengerCreateInfoEXT create_info = {
           .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-          .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT,
-          .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT,
+          .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+          .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
           .pfnUserCallback = vulkan_debug_callback,
           .pUserData = nullptr
      };
 
-     PFN_vkCreateDebugUtilsMessengerEXT create_func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-     if (create_func == nullptr)
-          logger::fatal("vulkan debug messenger extension not present");
-     if (create_func(instance, &create_info, nullptr, &debug_messenger) != VK_SUCCESS)
+     if (create_debug_utils_messenger_ext(instance, &create_info, nullptr, &debug_messenger) != VK_SUCCESS)
           logger::fatal("unable to set up vulkan debug messenger");
 
      logger::trace("initialized vulkan debug messenger");
@@ -125,7 +131,7 @@ void App::init_instance()
      VkInstanceCreateInfo instance_ci = {
           .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
           .pApplicationInfo = &app_info,
-          .enabledExtensionCount = required_extensions.size(),
+          .enabledExtensionCount = static_cast<uint32_t>(required_extensions.size()),
           .ppEnabledExtensionNames = required_extensions.data()
      };
 
@@ -183,7 +189,7 @@ App::App(int width, int height, const std::string& title)
      if (!glfwInit())
           logger::fatal("unable to initialize glfw");
      glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
      window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
      if (window == nullptr)
@@ -193,6 +199,7 @@ App::App(int width, int height, const std::string& title)
      // vulkan stuff
      init_validation_layers();
      init_instance();
+     init_debug_messenger();
      init_device();
 
      logger::debug("initialized vulkan app");
@@ -202,8 +209,6 @@ App::~App()
 {
      glfwDestroyWindow(window);
      glfwTerminate();
-
-
 
      logger::debug("deinitialized vulkan app");
 }
@@ -217,7 +222,6 @@ void App::run()
      while (!glfwWindowShouldClose(window))
      {
           // rendering logic
-          glfwSwapBuffers(window);
           fps_counter++;
 
           // update logic

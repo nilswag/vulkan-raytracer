@@ -37,11 +37,11 @@ void App::init_device()
 {
      uint32_t device_count = 0;
      if (vkEnumeratePhysicalDevices(instance, &device_count, nullptr) != VK_SUCCESS)
-          logger::fatal("unable to enumerate physical devices");
+          logger::error("unable to enumerate physical devices");
      
      std::vector<VkPhysicalDevice> devices(device_count);
      if (vkEnumeratePhysicalDevices(instance, &device_count, devices.data()) != VK_SUCCESS)
-          logger::fatal("unable to enumerate physical devices");
+          logger::error("unable to enumerate physical devices");
 
      // what physical device to use (default = 0)
      uint32_t device_index = 0;
@@ -68,6 +68,9 @@ void App::init_device()
                break;
           }
      }
+
+     if (!glfwGetPhysicalDevicePresentationSupport(instance, devices[device_index], queue_family))
+          logger::fatal("graphics device does not support graphics queue family");
 
      logger::trace("initialized vulkan device");
 }

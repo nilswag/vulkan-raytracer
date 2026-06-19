@@ -46,10 +46,10 @@ void App::init_device()
      uint32_t device_index = 0;
      VkPhysicalDeviceProperties2 device_properties = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
      vkGetPhysicalDeviceProperties2(devices[device_index], &device_properties);
-     logger::debug("device name: {}", device_properties.properties.deviceName);
-     logger::debug("device api version: {}", device_properties.properties.apiVersion);
-     logger::debug("device driver version: {}", device_properties.properties.driverVersion);
-     logger::debug("device vendor id: {}", device_properties.properties.vendorID);
+     logger::info("device name: {}", device_properties.properties.deviceName);
+     logger::info("device api version: {}", device_properties.properties.apiVersion);
+     logger::info("device driver version: {}", device_properties.properties.driverVersion);
+     logger::info("device vendor id: {}", device_properties.properties.vendorID);
 
      logger::trace("initialized vulkan device");
 }
@@ -104,7 +104,7 @@ void App::run()
           if (timer >= 1.0f)
           {
                timer = 0.0f;
-               logger::debug("dt: {:.3f}ms\t fps: {}\t ticks: {}", dt * 1e3, fps_counter, ticks);
+               logger::info("dt: {:.3f}ms\t fps: {}\t ticks: {}", dt * 1e3, fps_counter, ticks);
                fps_counter = 0;
           }
 

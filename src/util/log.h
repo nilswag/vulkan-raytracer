@@ -19,6 +19,11 @@ namespace logger
      template<typename... Args>
      inline void out(const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
      {
+          #ifndef _DEBUG
+          if (level > LogLevel::INFO)
+               return;
+          #endif
+
           std::string prefix = "";
           switch (level)
           {

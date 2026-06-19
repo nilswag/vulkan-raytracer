@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include "vulkan/app.h"
 
+// TODO: add vulkan validation layers
+
 int main()
 {
 	try

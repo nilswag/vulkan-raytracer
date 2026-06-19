@@ -46,6 +46,7 @@ void App::init_device()
      uint32_t device_index = 0;
      VkPhysicalDeviceProperties2 device_properties = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
      vkGetPhysicalDeviceProperties2(devices[device_index], &device_properties);
+     
      logger::info("device name: {}", device_properties.properties.deviceName);
      logger::info("device api version: {}", device_properties.properties.apiVersion);
      logger::info("device driver version: {}", device_properties.properties.driverVersion);

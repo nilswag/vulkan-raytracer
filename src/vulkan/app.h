@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-// TOOD: add vulkan validation layers
 class App
 {
 
@@ -16,7 +15,7 @@ public:
 private:
      GLFWwindow* window;
      VkInstance instance;
-     
+
      int width, height;
      std::string title;
 

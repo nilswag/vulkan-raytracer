@@ -1,6 +1,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include "app.h"
@@ -51,6 +52,22 @@ void App::init_device()
      logger::info("device api version: {}", device_properties.properties.apiVersion);
      logger::info("device driver version: {}", device_properties.properties.driverVersion);
      logger::info("device vendor id: {}", device_properties.properties.vendorID);
+
+     // init queue for graphics queue
+     uint32_t queue_family_count = 0;
+     vkGetPhysicalDeviceQueueFamilyProperties(devices[device_index], &queue_family_count, nullptr);
+     std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
+     vkGetPhysicalDeviceQueueFamilyProperties(devices[device_index], &queue_family_count, queue_families.data());
+
+     uint32_t queue_family = 0;
+     for (size_t i = 0; i < queue_families.size(); i++)
+     {
+          if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+          {
+               queue_family = i;
+               break;
+          }
+     }
 
      logger::trace("initialized vulkan device");
 }

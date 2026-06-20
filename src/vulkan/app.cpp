@@ -127,9 +127,7 @@ void App::init_instance()
      const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extension_count);
      std::vector<const char*> required_extensions(glfw_extensions, glfw_extensions + extension_count);
 
-     #ifdef _DEBUG
      required_extensions.push_back("VK_EXT_debug_utils");
-     #endif
 
      logger::trace("found {} required extensions:", extension_count);
      for (int i = 0; i < extension_count; i++)
@@ -138,10 +136,8 @@ void App::init_instance()
      VkInstanceCreateInfo instance_ci = {
           .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
           .pApplicationInfo = &app_info,
-     #ifdef _DEBUG
           .enabledLayerCount = static_cast<uint32_t>(required_validation_layers.size()),
           .ppEnabledLayerNames = required_validation_layers.data(),
-     #endif
           .enabledExtensionCount = static_cast<uint32_t>(required_extensions.size()),
           .ppEnabledExtensionNames = required_extensions.data()
      };

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
@@ -15,6 +16,11 @@ public:
 private:
      GLFWwindow* window;
      VkInstance instance;
+     VkDebugUtilsMessengerEXT debug_messenger;
+
+     const std::vector<const char*> required_validation_layers = {
+          "VK_LAYER_KHRONOS_validation"
+     };
 
      int width, height;
      std::string title;

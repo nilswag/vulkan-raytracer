@@ -41,6 +41,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback(
 
           case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
           logger::error("vulkan error ({}): {}", type_str, callback_data->pMessage);
+          break;
 
           default:
           logger::debug("vulkan misc ({})S: {}", type_str, callback_data->pMessage);
@@ -52,17 +53,12 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback(
 
 void App::init_validation_layers()
 {
-     // list of wanted validation layers
-     const std::vector<const char*> required_layers = {
-          "VK_LAYER_KHRONOS_validation"
-     };
-
      uint32_t layer_count = 0;
      vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
      std::vector<VkLayerProperties> available_layers(layer_count);
      vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
-     for (const char* layer_name : required_layers)
+     for (const char* layer_name : required_validation_layers)
      {
           auto it = std::find_if(available_layers.begin(), available_layers.end(), [layer_name](const auto& layer_properties){
                return strcmp(layer_name, layer_properties.layerName) == 0;
@@ -82,13 +78,24 @@ static VkResult create_debug_utils_messenger_ext(
 {
      PFN_vkCreateDebugUtilsMessengerEXT create_func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
      if (create_func == nullptr)
-          logger::fatal("vulkan debug messenger extension not present");
+          logger::fatal("unable to load vulkan debug messenger create function");
      return create_func(instance, create_info, allocator, debug_messenger);
+}
+
+static void destroy_debug_utils_messenger_ext(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, const VkAllocationCallbacks* allcoator)
+{
+     PFN_vkDestroyDebugUtilsMessengerEXT destroy_func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+     if (destroy_func == nullptr)
+     {
+          logger::error("unable to load vulkan debug messenger destroy function");
+          return;
+     }
+
+     destroy_func(instance, debug_messenger, allcoator);
 }
 
 void App::init_debug_messenger()
 {
-     VkDebugUtilsMessengerEXT debug_messenger;
      VkDebugUtilsMessengerCreateInfoEXT create_info = {
           .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
           .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -131,6 +138,10 @@ void App::init_instance()
      VkInstanceCreateInfo instance_ci = {
           .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
           .pApplicationInfo = &app_info,
+     #ifdef _DEBUG
+          .enabledLayerCount = static_cast<uint32_t>(required_validation_layers.size()),
+          .ppEnabledLayerNames = required_validation_layers.data(),
+     #endif
           .enabledExtensionCount = static_cast<uint32_t>(required_extensions.size()),
           .ppEnabledExtensionNames = required_extensions.data()
      };
@@ -209,6 +220,9 @@ App::~App()
 {
      glfwDestroyWindow(window);
      glfwTerminate();
+
+     destroy_debug_utils_messenger_ext(instance, debug_messenger, nullptr);
+     vkDestroyInstance(instance, nullptr);
 
      logger::debug("deinitialized vulkan app");
 }

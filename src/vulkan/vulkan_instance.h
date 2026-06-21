@@ -2,9 +2,11 @@
 #include <string>
 #include <vulkan/vulkan.h>
 
+struct VulkanAppInfo;
+
 struct VulkanInstance
 {
-    VulkanInstance(const std::string& application_name);
+    VulkanInstance(VulkanAppInfo& app_info);
     ~VulkanInstance();
 
     VkInstance instance = VK_NULL_HANDLE;

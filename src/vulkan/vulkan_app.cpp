@@ -17,14 +17,14 @@ VulkanApp::VulkanApp(const VulkanAppInfo& app_info)
     if (window == nullptr)
         logger::fatal("Unable to initialize GLFW window");
 
-    logger::debug("VulkanApp initialized");
+    logger::debug("Initialized VulkanApp");
 }
 
 VulkanApp::~VulkanApp()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
-    logger::debug("VulkanApp deinitialized");
+    logger::debug("Deinitialized VulkanApp");
 }
 
 void VulkanApp::run()

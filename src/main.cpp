@@ -1,11 +1,11 @@
 #include <cstdlib>
-#include "vulkan/app.h"
+#include "vulkan/vulkan_app.h"
 
 int main()
 {
 	try
 	{
-		App app(1000, 1000, "vulkan app");
+		VulkanApp app(100, 1000, "vulkan raytracer");
 		app.run();
 	}
 	catch (const std::exception& e)

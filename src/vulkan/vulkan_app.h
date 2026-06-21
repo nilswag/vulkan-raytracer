@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <GLFW/glfw3.h>
+#include "vulkan_instance.h"
 
 struct VulkanAppInfo
 {
@@ -18,6 +19,9 @@ public:
     void run();
 
 private:
+    VulkanInstance instance = { 0 };
+
     GLFWwindow* window = nullptr;
     int width, height;
+
 };

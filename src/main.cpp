@@ -5,7 +5,7 @@ int main()
 {
 	try
 	{
-		VulkanApp app(1000, 1000, "vulkan raytracer");
+		VulkanApp app({ .width = 1000, .height = 1000, .title = "Vulkan Raytracer" });
 		app.run();
 	}
 	catch (const std::exception& e)

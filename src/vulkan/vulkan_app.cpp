@@ -1,10 +1,13 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include "vulkan_app.h"
+#include "vulkan_instance.h"
 #include "../util/log.h"
 
 VulkanApp::VulkanApp(const VulkanAppInfo& app_info)
 {
+    logger::debug("Initializing VulkanApp...");
+
     width = app_info.width;
     height = app_info.height;
 
@@ -16,6 +19,8 @@ VulkanApp::VulkanApp(const VulkanAppInfo& app_info)
     window = glfwCreateWindow(width, height, app_info.title.c_str(), nullptr, nullptr);
     if (window == nullptr)
         logger::fatal("Unable to initialize GLFW window");
+
+    instance.init(app_info);
 
     logger::debug("Initialized VulkanApp");
 }

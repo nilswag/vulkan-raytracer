@@ -1,16 +1,35 @@
 cmake_minimum_required(VERSION 4.2)
 project(vulkan-raytracer)
 
+# ------------------------------
+# language standard
+# ------------------------------
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+# ------------------------------
+# dependencies
+# ------------------------------
 find_package(Vulkan REQUIRED)
-
 add_subdirectory(third_party/glfw)
 
-file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.cpp)
+# ------------------------------
+# sources
+# ------------------------------
+set(SOURCES
+	src/main.cpp
+	src/vulkan/app.cpp
+)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+set(HEADERS
+	src/util/log.h
+	src/vulkan/app.h
+)
+
+# ------------------------------
+# target
+# ------------------------------
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE src
@@ -22,6 +41,5 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_compile_definitions(${PROJECT_NAME}
-	# PRIVATE $<$<CONFIG:RelWithDebInfo>:_DEBUG>
 	PRIVATE $<$<CONFIG:Debug>:_DEBUG>
 )

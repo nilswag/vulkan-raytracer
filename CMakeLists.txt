@@ -19,11 +19,13 @@ add_subdirectory(third_party/glfw)
 set(SOURCES
 	src/main.cpp
 	src/vulkan/vulkan_app.cpp
+	src/vulkan/vulkan_instance.cpp
 )
 
 set(HEADERS
 	src/util/log.h
 	src/vulkan/vulkan_app.h
+	src/vulkan/vulkan_instance.h
 )
 
 # ------------------------------

@@ -1,19 +1,23 @@
 #pragma once
 #include <string>
+#include <GLFW/glfw3.h>
 
-struct GLFWwindow;
+struct VulkanAppInfo
+{
+    int width;
+    int height;
+    std::string title;
+};
 
 class VulkanApp
 {
 public:
-    VulkanApp(int width, int height, const std::string& title);
+    VulkanApp(const VulkanAppInfo& app_info);
     ~VulkanApp();
 
     void run();
 
 private:
     GLFWwindow* window = nullptr;
-    int width;
-    int height;
-    std::string title;
+    int width, height;
 };

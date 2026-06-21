@@ -6,30 +6,30 @@
 
 VulkanApp::VulkanApp(const VulkanAppInfo& app_info)
 {
-    logger::debug("Initializing VulkanApp...");
+    logger::debug("VulkanApp: initializing");
 
     width = app_info.width;
     height = app_info.height;
 
     if (!glfwInit())
-        logger::fatal("Unable to initialize GLFW");
+        logger::fatal("VulkanApp: glfwInit failed");
     glfwWindowHint(GLFW_NO_API, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(width, height, app_info.title.c_str(), nullptr, nullptr);
     if (window == nullptr)
-        logger::fatal("Unable to initialize GLFW window");
+        logger::fatal("VulkanApp: glfwCreateWindow failed");
 
     instance.init(app_info);
 
-    logger::debug("Initialized VulkanApp");
+    logger::debug("VulkanApp: initialized");
 }
 
 VulkanApp::~VulkanApp()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
-    logger::debug("Deinitialized VulkanApp");
+    logger::debug("VulkanApp: deinitialized");
 }
 
 void VulkanApp::run()

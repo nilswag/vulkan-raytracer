@@ -9,7 +9,7 @@
 
 void VulkanInstance::init(const VulkanAppInfo& app_info)
 {
-    logger::debug("Initializing VulkanInstance...");
+    logger::debug("VulkanInstance: initializing");
 
     VkApplicationInfo vk_app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -31,13 +31,13 @@ void VulkanInstance::init(const VulkanAppInfo& app_info)
     };
 
     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
-        logger::fatal("Unable to initialize vulkan instance");
+        logger::fatal("VulkanInstance: vkCreateInstance failed");
 
-    logger::debug("Initialized VulkanInstance");
+    logger::debug("VulkanInstance: initialized");
 }
 
 VulkanInstance::~VulkanInstance()
 {
     vkDestroyInstance(instance, nullptr);
-    logger::debug("Deinitialized VulkanInstance");
+    logger::debug("VulkanInstance: deinitialized");
 }

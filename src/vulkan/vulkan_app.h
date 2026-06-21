@@ -23,5 +23,6 @@ private:
 
     GLFWwindow* window = nullptr;
     int width, height;
-
+    size_t ticks = 0;
+    double dt = 0.0;
 };

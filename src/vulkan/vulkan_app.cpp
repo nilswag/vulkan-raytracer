@@ -34,13 +34,28 @@ VulkanApp::~VulkanApp()
 
 void VulkanApp::run()
 {
-    logger::trace("Started VulkanApp");
-    
+    logger::trace("VulkanApp: entering main loop");
+
+    double last = glfwGetTime();
+    double timer = 0.0;
+
     while (!glfwWindowShouldClose(window))
     {
         // rendering
 
         // updates
+        double now = glfwGetTime();
+        dt = now - last;
+        last = now;
+
+        timer += dt;
+        if (timer >= 1.0)
+        {
+            logger::info("DT = {:.3f} ms, FPS = {:.1f}", dt * 1000.0, 1.0 / dt);
+            timer -= 1.0;
+        }
+
         glfwPollEvents();
+        ticks++;
     }
 }

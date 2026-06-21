@@ -20,14 +20,16 @@ void VulkanInstance::init(const VulkanAppInfo& app_info)
 
     uint32_t extension_count = 0;
     const char** extensions_ptr = glfwGetRequiredInstanceExtensions(&extension_count);
-    std::vector<const char*> extensions(extensions_ptr, extensions_ptr + extension_count);
-    logger::info("Enabled extensions ({}):", extension_count);
-    for (int i = 0; i < extensions.size(); i++)
-        logger::info("  [{}] = {}", i, extensions[i]);
+    std::vector<const char*> required_extension(extensions_ptr, extensions_ptr + extension_count);
+    logger::info("Required extensions ({}):", extension_count);
+    for (int i = 0; i < required_extension.size(); i++)
+        logger::info("  [{}] = {}", i, required_extension[i]);
 
     VkInstanceCreateInfo instance_ci = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pApplicationInfo = &vk_app_info
+        .pApplicationInfo = &vk_app_info,
+        .enabledExtensionCount = static_cast<uint32_t>(required_extension.size()),
+        .ppEnabledExtensionNames = required_extension.data(),
     };
 
     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)

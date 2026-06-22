@@ -50,12 +50,11 @@ void Instance::init(const AppInfo& app_info)
 {
     logger::debug("Instance: initializing");
     
-    VkApplicationInfo vk_app_info = {
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pApplicationName = app_info.title.c_str(),
-        .pEngineName = "No engine",
-        .apiVersion = VK_API_VERSION_1_4,
-    };
+    VkApplicationInfo vk_app_info = {};
+    vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    vk_app_info.pApplicationName = app_info.title.c_str();
+    vk_app_info.pEngineName = "No engine";
+    vk_app_info.apiVersion = VK_API_VERSION_1_4;
 
     uint32_t glfw_extensions_count = 0;
     const char** glfw_extensions_ptr = glfwGetRequiredInstanceExtensions(&glfw_extensions_count);
@@ -104,17 +103,16 @@ void Instance::create_debug_messenger()
 {
     logger::trace("Instance: creating debug messenger");
 
-    VkDebugUtilsMessengerCreateInfoEXT debug_messenger_ci = {
-        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = debug_messenger_callback,
-    };
+    VkDebugUtilsMessengerCreateInfoEXT debug_messenger_ci = {};
+    debug_messenger_ci.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debug_messenger_ci.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+                                       | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+                                       | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+                                       | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debug_messenger_ci.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+                                   | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+                                   | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    debug_messenger_ci.pfnUserCallback = debug_messenger_callback;
 
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
 

@@ -7,6 +7,35 @@
 #include "vk_app.h"
 #include "../util/log.h"
 
+static VkBool32 debug_messenger_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+    void* user_data
+)
+{
+    switch (message_severity)
+    {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+        logger::trace("Validation layer: {}", callback_data->pMessage);
+        break;
+
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        logger::debug("Validation layer: {}", callback_data->pMessage);
+        break;
+        
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        logger::warn("Validation layer: {}", callback_data->pMessage);
+        break;
+
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        logger::error("Validation layer: {}", callback_data->pMessage);
+        break;
+    }
+
+    return VK_FALSE;
+}
+
 void Instance::init(const AppInfo& app_info)
 {
     logger::debug("Instance: initializing");

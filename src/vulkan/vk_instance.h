@@ -11,10 +11,16 @@ public:
     ~Instance();
 
 private:
+    void create_debug_messenger();
+    void validate_layers();
+    void validate_extension();
+
     void add_validation_layer(const char* layer_name);
     void check_validation_layers();
 
-    VkInstance instance = VK_NULL_HANDLE;
     std::vector<const char*> validation_layers;
-    VkDebugUtilsMessengerEXT debug_messenger = VK_NULL_HANDLE;
+    std::vector<const char*> extensions;
+    VkInstance instance;
+    
+    VkDebugUtilsMessengerEXT debug_messenger;
 };

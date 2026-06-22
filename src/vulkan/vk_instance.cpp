@@ -65,21 +65,36 @@ void Instance::init(const AppInfo& app_info)
 
     uint32_t extension_count = 0;
     const char** extensions_ptr = glfwGetRequiredInstanceExtensions(&extension_count);
-    std::vector<const char*> required_extensions(extensions_ptr, extensions_ptr + extension_count);
+
 
 #ifdef _DEBUG
-    required_extensions.push_back("VK_EXT_debug_utils");
+    extensions.push_back("VK_EXT_debug_utils");
+
+    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
+    std::vector<VkExtensionProperties> available_extensions(extension_count);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data());
+    
+    for (const char* extension_name : extensions)
+    {
+        if (available_extensions.end() == std::find_if(available_extensions.begin(), available_extensions.end(),
+            [extension_name](const VkExtensionProperties& extension) {
+                return std::strcmp(extension_name, extension.extensionName) == 0;
+            }))
+        {
+            logger::fatal("Instance: required extension '{}' not found", extension_name);
+        }
+    }
 #endif
 
-    logger::debug("Instance: required extensions ({}):", required_extensions.size());
-    for (int i = 0; i < required_extensions.size(); i++)
-        logger::debug("  [{}] = '{}'", i, required_extensions[i]);
+    logger::debug("Instance: required extensions ({}):", extensions.size());
+    for (int i = 0; i < extensions.size(); i++)
+        logger::debug("  [{}] = '{}'", i, extensions[i]);
 
     VkInstanceCreateInfo instance_ci = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &vk_app_info,
-        .enabledExtensionCount = static_cast<uint32_t>(required_extensions.size()),
-        .ppEnabledExtensionNames = required_extensions.data(),
+        .enabledExtensionCount = static_cast<uint32_t>(extensions.size()),
+        .ppEnabledExtensionNames = extensions.data(),
     };
 
 #ifdef _DEBUG
@@ -124,36 +139,41 @@ Instance::~Instance()
     logger::debug("Instance: deinitialized");
 }
 
-void Instance::add_validation_layer(const char* layer_name)
+void Instance::create_debug_messenger()
 {
-    logger::trace("Instance: adding validation layer '{}'", layer_name);
-    validation_layers.push_back(layer_name);
+
 }
 
-void Instance::check_validation_layers()
+void Instance::validate_layers()
 {
-    logger::trace("Instance: enabling validation layers");
-
-    if (validation_layers.empty())
-        return;
+    logger::trace("Instance: checking validation layer support");
 
     uint32_t layer_count = 0;
     vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
     std::vector<VkLayerProperties> available_layers(layer_count);
     vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
-    for (const char* layer_name : validation_layers)
+    for (const char*& layer_name : validation_layers)
     {
-        logger::trace("Instance: enabling validation layer '{}'", layer_name);
-        if (available_layers.end() == std::find_if(available_layers.begin(), available_layers.end(),
-            [layer_name](const VkLayerProperties& layer) {
-                return std::strcmp(layer_name, layer.layerName) == 0;
-            }))
+        if (std::find_if(available_layers.begin(), available_layers.end(), [layer_name](const VkLayerProperties& layer) {
+            return std::strcmp(layer_name, layer.layerName) == 0;
+        }) == available_layers.end())
         {
             logger::warn("Instance: validation layer '{}' not found", layer_name);
             continue;
         }
-        
-        logger::debug("Instance: validation layer '{}' enabled", layer_name);
+
+        logger::debug("Instance: validation layer '{}' supported", layer_name);
     }
+}
+
+void Instance::validate_extension()
+{
+    
+}
+
+void Instance::add_validation_layer(const char* layer_name)
+{
+    logger::trace("Instance: adding validation layer '{}'", layer_name);
+    validation_layers.push_back(layer_name);
 }

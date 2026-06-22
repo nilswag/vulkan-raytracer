@@ -2,12 +2,12 @@
 #include <string>
 #include <vulkan/vulkan.h>
 
-struct VulkanAppInfo;
+struct AppInfo;
 
-struct VulkanInstance
+struct Instance
 {
-    void init(const VulkanAppInfo& app_info);
-    ~VulkanInstance();
+    void init(const AppInfo& app_info);
+    ~Instance();
 
     VkInstance instance = VK_NULL_HANDLE;
 };

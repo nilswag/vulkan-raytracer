@@ -4,37 +4,37 @@
 #include "vk_instance.h"
 #include "../util/log.h"
 
-VulkanApp::VulkanApp(const VulkanAppInfo& app_info)
+App::App(const AppInfo& app_info)
 {
-    logger::debug("VulkanApp: initializing");
+    logger::debug("App: initializing");
 
     width = app_info.width;
     height = app_info.height;
 
     if (!glfwInit())
-        logger::fatal("VulkanApp: glfwInit failed");
+        logger::fatal("App: glfwInit failed");
     glfwWindowHint(GLFW_NO_API, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(width, height, app_info.title.c_str(), nullptr, nullptr);
     if (window == nullptr)
-        logger::fatal("VulkanApp: glfwCreateWindow failed");
+        logger::fatal("App: glfwCreateWindow failed");
 
     instance.init(app_info);
 
-    logger::debug("VulkanApp: initialized");
+    logger::debug("App: initialized");
 }
 
-VulkanApp::~VulkanApp()
+App::~App()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
-    logger::debug("VulkanApp: deinitialized");
+    logger::debug("App: deinitialized");
 }
 
-void VulkanApp::run()
+void App::run()
 {
-    logger::trace("VulkanApp: entering main loop");
+    logger::trace("App: entering main loop");
 
     double last = glfwGetTime();
     double timer = 0.0;

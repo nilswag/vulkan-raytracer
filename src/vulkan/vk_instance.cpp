@@ -6,9 +6,9 @@
 #include "vk_app.h"
 #include "../util/log.h"
 
-void VulkanInstance::init(const VulkanAppInfo& app_info)
+void Instance::init(const AppInfo& app_info)
 {
-    logger::debug("VulkanInstance: initializing");
+    logger::debug("Instance: initializing");
 
     VkApplicationInfo vk_app_info = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -32,13 +32,13 @@ void VulkanInstance::init(const VulkanAppInfo& app_info)
     };
 
     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
-        logger::fatal("VulkanInstance: vkCreateInstance failed");
+        logger::fatal("Instance: vkCreateInstance failed");
 
-    logger::debug("VulkanInstance: initialized");
+    logger::debug("Instance: initialized");
 }
 
-VulkanInstance::~VulkanInstance()
+Instance::~Instance()
 {
     vkDestroyInstance(instance, nullptr);
-    logger::debug("VulkanInstance: deinitialized");
+    logger::debug("Instance: deinitialized");
 }

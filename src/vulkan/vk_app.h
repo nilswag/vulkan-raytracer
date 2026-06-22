@@ -3,23 +3,23 @@
 #include <GLFW/glfw3.h>
 #include "vk_instance.h"
 
-struct VulkanAppInfo
+struct AppInfo
 {
     int width;
     int height;
     std::string title;
 };
 
-class VulkanApp
+class App
 {
 public:
-    VulkanApp(const VulkanAppInfo& app_info);
-    ~VulkanApp();
+    App(const AppInfo& app_info);
+    ~App();
 
     void run();
 
 private:
-    VulkanInstance instance = { 0 };
+    Instance instance = { 0 };
 
     GLFWwindow* window = nullptr;
     int width, height;

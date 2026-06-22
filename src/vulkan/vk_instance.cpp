@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <cstring>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include "vk_instance.h"
@@ -19,17 +20,26 @@ void Instance::init(const AppInfo& app_info)
 
     uint32_t extension_count = 0;
     const char** extensions_ptr = glfwGetRequiredInstanceExtensions(&extension_count);
-    std::vector<const char*> required_extension(extensions_ptr, extensions_ptr + extension_count);
-    logger::info("Required extensions ({}):", extension_count);
-    for (int i = 0; i < required_extension.size(); i++)
-        logger::info("  [{}] = {}", i, required_extension[i]);
+    std::vector<const char*> required_extensions(extensions_ptr, extensions_ptr + extension_count);
+
+    logger::debug("Instance: required extensions ({}):", extension_count);
+    for (int i = 0; i < required_extensions.size(); i++)
+        logger::debug("  [{}] = '{}'", i, required_extensions[i]);
 
     VkInstanceCreateInfo instance_ci = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &vk_app_info,
-        .enabledExtensionCount = static_cast<uint32_t>(required_extension.size()),
-        .ppEnabledExtensionNames = required_extension.data(),
+        .enabledExtensionCount = static_cast<uint32_t>(required_extensions.size()),
+        .ppEnabledExtensionNames = required_extensions.data(),
     };
+
+#ifdef _DEBUG
+    add_validation_layer("VK_LAYER_KHRONOS_validation");
+    enable_validation_layers();
+
+    instance_ci.enabledLayerCount = static_cast<uint32_t>(validation_layers.size());
+    instance_ci.ppEnabledLayerNames = validation_layers.data();
+#endif
 
     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
         logger::fatal("Instance: vkCreateInstance failed");
@@ -41,4 +51,38 @@ Instance::~Instance()
 {
     vkDestroyInstance(instance, nullptr);
     logger::debug("Instance: deinitialized");
+}
+
+void Instance::add_validation_layer(const char* layer_name)
+{
+    logger::trace("Instance: adding validation layer '{}'", layer_name);
+    validation_layers.push_back(layer_name);
+}
+
+void Instance::enable_validation_layers()
+{
+    logger::trace("Instance: enabling validation layers");
+
+    if (validation_layers.empty())
+        return;
+
+    uint32_t layer_count = 0;
+    vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+    std::vector<VkLayerProperties> available_layers(layer_count);
+    vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
+
+    for (const char* layer_name : validation_layers)
+    {
+        logger::trace("Instance: enabling validation layer '{}'", layer_name);
+        if (available_layers.end() == std::find_if(available_layers.begin(), available_layers.end(),
+            [layer_name](const VkLayerProperties& layer) {
+                return std::strcmp(layer_name, layer.layerName) == 0;
+            }))
+        {
+            logger::warn("Instance: validation layer '{}' not found", layer_name);
+            continue;
+        }
+        
+        logger::debug("Instance: validation layer '{}' enabled", layer_name);
+    }
 }

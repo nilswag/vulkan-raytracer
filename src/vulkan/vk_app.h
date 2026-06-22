@@ -19,7 +19,7 @@ public:
     void run();
 
 private:
-    Instance instance = { 0 };
+    Instance instance;
 
     GLFWwindow* window = nullptr;
     int width, height;

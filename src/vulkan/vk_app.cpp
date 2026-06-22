@@ -1,7 +1,7 @@
 #include <string>
 #include <GLFW/glfw3.h>
-#include "vulkan_app.h"
-#include "vulkan_instance.h"
+#include "vk_app.h"
+#include "vk_instance.h"
 #include "../util/log.h"
 
 VulkanApp::VulkanApp(const VulkanAppInfo& app_info)

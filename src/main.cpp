@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include "vulkan/vulkan_app.h"
+#include "vulkan/vk_app.h"
 
 int main()
 {

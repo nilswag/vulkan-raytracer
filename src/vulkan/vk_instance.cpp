@@ -2,8 +2,8 @@
 #include <vector>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include "vulkan_instance.h"
-#include "vulkan_app.h"
+#include "vk_instance.h"
+#include "vk_app.h"
 #include "../util/log.h"
 
 void VulkanInstance::init(const VulkanAppInfo& app_info)

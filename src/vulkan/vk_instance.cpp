@@ -22,7 +22,9 @@ void Instance::init(const AppInfo& app_info)
     const char** extensions_ptr = glfwGetRequiredInstanceExtensions(&extension_count);
     std::vector<const char*> required_extensions(extensions_ptr, extensions_ptr + extension_count);
 
+#ifdef _DEBUG
     required_extensions.push_back("VK_EXT_debug_utils");
+#endif
 
     logger::debug("Instance: required extensions ({}):", required_extensions.size());
     for (int i = 0; i < required_extensions.size(); i++)
@@ -37,7 +39,7 @@ void Instance::init(const AppInfo& app_info)
 
 #ifdef _DEBUG
     add_validation_layer("VK_LAYER_KHRONOS_validation");
-    enable_validation_layers();
+    check_validation_layers();
 
     instance_ci.enabledLayerCount = static_cast<uint32_t>(validation_layers.size());
     instance_ci.ppEnabledLayerNames = validation_layers.data();
@@ -61,7 +63,7 @@ void Instance::add_validation_layer(const char* layer_name)
     validation_layers.push_back(layer_name);
 }
 
-void Instance::enable_validation_layers()
+void Instance::check_validation_layers()
 {
     logger::trace("Instance: enabling validation layers");
 

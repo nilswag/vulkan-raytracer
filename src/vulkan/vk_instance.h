@@ -12,7 +12,7 @@ public:
 
 private:
     void add_validation_layer(const char* layer_name);
-    void enable_validation_layers();
+    void check_validation_layers();
 
     VkInstance instance = VK_NULL_HANDLE;
     std::vector<const char*> validation_layers;

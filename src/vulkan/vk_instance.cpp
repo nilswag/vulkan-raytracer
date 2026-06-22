@@ -22,7 +22,9 @@ void Instance::init(const AppInfo& app_info)
     const char** extensions_ptr = glfwGetRequiredInstanceExtensions(&extension_count);
     std::vector<const char*> required_extensions(extensions_ptr, extensions_ptr + extension_count);
 
-    logger::debug("Instance: required extensions ({}):", extension_count);
+    required_extensions.push_back("VK_EXT_debug_utils");
+
+    logger::debug("Instance: required extensions ({}):", required_extensions.size());
     for (int i = 0; i < required_extensions.size(); i++)
         logger::debug("  [{}] = '{}'", i, required_extensions[i]);
 

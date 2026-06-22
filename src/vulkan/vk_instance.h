@@ -16,4 +16,5 @@ private:
 
     VkInstance instance = VK_NULL_HANDLE;
     std::vector<const char*> validation_layers;
+    VkDebugUtilsMessengerEXT debug_messenger = VK_NULL_HANDLE;
 };

@@ -14,22 +14,38 @@ static VkBool32 debug_messenger_callback(
     void* user_data
 )
 {
+    std::string message_type_str;
+    switch (message_type)
+    {
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+        message_type_str = "GENERAL";
+        break;
+
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+        message_type_str = "VALIDATION";
+        break;
+
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+        message_type_str = "PERFORMANCE";
+        break;
+    }
+
     switch (message_severity)
     {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        logger::trace("Validation layer: {}", callback_data->pMessage);
+        logger::trace("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
         break;
 
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        logger::debug("Validation layer: {}", callback_data->pMessage);
+        logger::debug("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
         break;
         
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        logger::warn("Validation layer: {}", callback_data->pMessage);
+        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
         break;
 
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        logger::error("Validation layer: {}", callback_data->pMessage);
+        logger::error("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
         break;
     }
 
@@ -77,11 +93,33 @@ void Instance::init(const AppInfo& app_info)
     if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
         logger::fatal("Instance: vkCreateInstance failed");
 
+#ifdef _DEBUG
+    VkDebugUtilsMessengerCreateInfoEXT debug_messenger_ci = {
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+            | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+            | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+        .pfnUserCallback = debug_messenger_callback,
+    };
+
+    PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+
+    if (vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger) != VK_SUCCESS)
+        logger::error("Instance: vkCreateDebugUtilsMessengerEXT failed");
+#endif
+
     logger::debug("Instance: initialized");
 }
 
 Instance::~Instance()
 {
+    PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));    
+    vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
+
     vkDestroyInstance(instance, nullptr);
     logger::debug("Instance: deinitialized");
 }

@@ -12,14 +12,12 @@ public:
 
 private:
     void create_debug_messenger();
+    void destroy_debug_messenger();
     void validate_layers();
-    void validate_extension();
+    void validate_extensions();
 
-    void add_validation_layer(const char* layer_name);
-    void check_validation_layers();
-
-    std::vector<const char*> validation_layers;
-    std::vector<const char*> extensions;
+    std::vector<const char*> requested_layers;
+    std::vector<const char*> requested_extensions;
     VkInstance instance;
     
     VkDebugUtilsMessengerEXT debug_messenger;

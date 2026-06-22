@@ -10,7 +10,7 @@ Early stage.
 
 - **C++23** compiler
   - Tested with MSVC (Visual Studio 2022) on Windows 11
-  - Tested with G++ on Arch Linux
+  - Tested with g++ on Arch Linux
 - **CMake** >= 4.2
 - **Vulkan SDK** (provides the Vulkan headers/loader etc., and is required for validation layers in debug builds)
   - [Download here](https://vulkan.lunarg.com/)

@@ -9,7 +9,7 @@ Early stage.
 ## Dependencies
 
 - **C++23** compiler
-  - Tested with MSVC (Visual Studio 2022) on Windows 11
+  - Tested with MSVC (Visual Studio 2026) on Windows 11
   - Tested with g++ on Arch Linux
 - **CMake** >= 4.2
 - **Vulkan SDK** (provides the Vulkan headers/loader etc., and is required for validation layers in debug builds)
@@ -54,7 +54,7 @@ cmake --build build
 
 ### Windows 11
 
-1. Install the [Vulkan SDK](https://vulkan.lunarg.com/) and a C++23-capable toolchain (Visual Studio 2022 with the "Desktop development with C++" workload works well).
+1. Install the [Vulkan SDK](https://vulkan.lunarg.com/) and a C++23-capable toolchain (Visual Studio 2026 with the "Desktop development with C++" workload works well).
 2. Configure and build from a Developer Command Prompt, or open the folder directly in Visual Studio (which picks up `CMakePresets.json` automatically):
 
 ```bash

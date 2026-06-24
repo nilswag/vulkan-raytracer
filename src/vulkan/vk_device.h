@@ -11,6 +11,6 @@ private:
     Device(Instance& instance, VkPhysicalDevice& physical_device);
 
     VkPhysicalDevice physical_device;
-    VkPhysicalDeviceProperties2 physical_device_properties;
     VkDevice logical_device;
+
 };

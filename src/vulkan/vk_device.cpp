@@ -24,6 +24,7 @@ Device::Device(Instance& instance, VkPhysicalDevice& physical_device)
 {
     logger::debug("Device: initializing");
 
+    VkPhysicalDeviceProperties2 physical_device_properties;
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
     logger::info("Device: using '{}'", physical_device_properties.properties.deviceName);

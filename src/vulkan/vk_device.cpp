@@ -27,12 +27,6 @@ Device::Device(Instance& instance, VkPhysicalDevice& physical_device)
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
     logger::info("Device: using '{}'", physical_device_properties.properties.deviceName);
-    logger::info("Device: {}", physical_device_properties.properties.limits);
-    
-    logger::debug("Device: initialized");
-}
 
-Device::~Device()
-{
-    logger::debug("Device: deinitialized");
+    logger::debug("Device: initialized");
 }

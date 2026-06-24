@@ -10,6 +10,8 @@ public:
     void init(const AppInfo& app_info);
     ~Instance();
 
+    inline VkInstance get() const { return instance; }
+
 private:
     void create_debug_messenger();
     void destroy_debug_messenger();

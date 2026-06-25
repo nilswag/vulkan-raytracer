@@ -3,6 +3,7 @@
 #include <print>
 #include <format>
 #include <ctime>
+#include <vulkan/vulkan.h>
 
 namespace logger
 {
@@ -85,4 +86,10 @@ namespace logger
      {
           out(LogLevel::TRACE, msg, std::forward<Args>(args)...);
      }
+}
+
+static inline void vkchk(const VkResult& result, const std::string& prefix, const std::string& func_name)
+{
+     if (result != VK_SUCCESS)
+          logger::error("{}: {} failed", prefix, func_name);
 }

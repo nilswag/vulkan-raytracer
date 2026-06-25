@@ -9,7 +9,7 @@ public:
 
 private:
     Device(Instance& instance, VkPhysicalDevice& physical_device, const std::vector<const char*>&);
-    void create_queue();
+    VkDeviceQueueCreateInfo create_queue_family_ci();
 
     VkPhysicalDevice physical_device;
     VkDevice logical_device;

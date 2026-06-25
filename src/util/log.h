@@ -88,8 +88,8 @@ namespace logger
      }
 }
 
-static inline void vkchk(const VkResult& result, const std::string& prefix, const std::string& func_name)
+static inline void chk(const VkResult& result, const std::string& prefix, const std::string& func_name)
 {
-     if (result != VK_SUCCESS)
+     if (result < VK_SUCCESS)
           logger::error("{}: {} failed", prefix, func_name);
 }

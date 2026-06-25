@@ -9,9 +9,9 @@ Device Device::get_device(Instance& instance, uint32_t index, const std::vector<
     logger::trace("Device: creating device with index {}", index);
 
     uint32_t device_count = 0;
-    vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr);
+    chk(vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
     std::vector<VkPhysicalDevice> physical_devices(device_count);
-    vkEnumeratePhysicalDevices(instance.get(), &device_count, physical_devices.data());
+    chk(vkEnumeratePhysicalDevices(instance.get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
 
     if (index >= physical_devices.size())
         logger::fatal("Device: index out of bounds");
@@ -20,7 +20,7 @@ Device Device::get_device(Instance& instance, uint32_t index, const std::vector<
 }
 
 Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std::vector<const char*>& requested_device_extensions)
-    : physical_device(physical_device)
+    : physical_device(physical_device), requested_device_extensions(requested_device_extensions)
 {
     logger::debug("Device: initializing");
 
@@ -30,7 +30,12 @@ Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std:
     logger::debug("Device: initialized");
 }
 
-VkDeviceQueueCreateInfo Device::create_queue_family_ci()
+Device::~Device()
+{
+    vkDestroyDevice(logical_device, nullptr);
+}
+
+VkDeviceQueueCreateInfo Device::create_queue_family_ci(uint32_t& queue_family)
 {
     logger::trace("Device: creating queue family");
 
@@ -39,7 +44,7 @@ VkDeviceQueueCreateInfo Device::create_queue_family_ci()
     std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
     vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queue_families.data());
 
-    uint32_t queue_family = -1;
+    queue_family = UINT32_MAX;
     for (size_t i = 0; i < queue_families.size(); i++)
     {
         if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
@@ -48,15 +53,13 @@ VkDeviceQueueCreateInfo Device::create_queue_family_ci()
             break;
         }
     }
-    if (queue_family < 0)
+    if (queue_family == UINT32_MAX)
         logger::error("Device: queue family flag unsupported 'VK_QUEUE_GRAPHICS_BIT'");
 
-    // const float queue_priorities = 1.0f;
     VkDeviceQueueCreateInfo queue_ci = {};
     queue_ci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_ci.queueFamilyIndex = queue_family;
     queue_ci.queueCount = 1;
-    queue_ci.pQueuePriorities = nullptr;
 
     return queue_ci;
 }
@@ -93,7 +96,20 @@ void Device::create_logical_device()
     enabled_vk13_features.synchronization2 = true;
     enabled_vk13_features.dynamicRendering = true;
 
-    VkDeviceQueueCreateInfo queue_ci = create_queue_family_ci();
+    uint32_t queue_family;
+    VkDeviceQueueCreateInfo queue_ci = create_queue_family_ci(queue_family);
+    const float queue_priorities = 1.0f;
+    queue_ci.pQueuePriorities = &queue_priorities;
 
     VkDeviceCreateInfo device_ci = {};
+    device_ci.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    device_ci.pNext = &enabled_vk13_features;
+    device_ci.queueCreateInfoCount = 1;
+    device_ci.pQueueCreateInfos = &queue_ci;
+    device_ci.enabledExtensionCount = static_cast<uint32_t>(requested_device_extensions.size());
+    device_ci.ppEnabledExtensionNames = requested_device_extensions.data();
+    device_ci.pEnabledFeatures = &enabled_vk10_features;
+
+    chk(vkCreateDevice(physical_device, &device_ci, nullptr, &logical_device), "Device", "vkCreateDevice");
+    vkGetDeviceQueue(logical_device, queue_family, 0, &queue);
 }

@@ -23,7 +23,7 @@ App::App(const AppInfo& app_info)
 
     instance.init(app_info);
 
-    Device::get_device(instance, 0, std::vector<const char*> { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+    Device device = Device::get_device(instance, 0, std::vector<const char*> { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 
     logger::debug("App: initialized");
 }

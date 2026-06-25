@@ -38,7 +38,15 @@ namespace logger
           }
           
           const std::time_t now = std::time(nullptr);
+          
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
           const std::tm* local_time = std::localtime(&now);
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
           std::println("{:02}:{:02}:{:02} {}{:<7} {}\033[0m", 
                local_time->tm_hour,

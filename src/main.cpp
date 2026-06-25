@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "vulkan/vk_app.h"
+#include "util/log.h"
 
 int main()
 {
@@ -10,6 +11,7 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
+		if (e.what() != nullptr) logger::debug("{}", e.what());
 		return EXIT_FAILURE;
 	}
 

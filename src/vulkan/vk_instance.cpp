@@ -17,11 +17,9 @@ static VkBool32 debug_messenger_callback(
     std::string message_type_str;
     if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
         message_type_str = "GENERAL";
-
-    if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
+    else if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
         message_type_str = "VALIDATION";
-
-    if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
+    else if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
         message_type_str = "PERFORMANCE";
 
 
@@ -64,10 +62,10 @@ void Instance::init(const AppInfo& app_info)
     validate_layers();
 
     VkInstanceCreateInfo instance_ci = {};
-    instance_ci.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-    instance_ci.pApplicationInfo = &vk_app_info,
-    instance_ci.enabledExtensionCount = static_cast<uint32_t>(requested_extensions.size()),
-    instance_ci.ppEnabledExtensionNames = requested_extensions.data(),
+    instance_ci.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instance_ci.pApplicationInfo = &vk_app_info;
+    instance_ci.enabledExtensionCount = static_cast<uint32_t>(requested_extensions.size());
+    instance_ci.ppEnabledExtensionNames = requested_extensions.data();
 #ifdef _DEBUG
     instance_ci.enabledLayerCount = static_cast<uint32_t>(requested_layers.size());
     instance_ci.ppEnabledLayerNames = requested_layers.data();

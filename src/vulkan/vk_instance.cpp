@@ -73,8 +73,7 @@ void Instance::init(const AppInfo& app_info)
     instance_ci.ppEnabledLayerNames = requested_layers.data();
 #endif
 
-    if (vkCreateInstance(&instance_ci, nullptr, &instance) != VK_SUCCESS)
-        logger::fatal("Instance: vkCreateInstance failed");
+    chk(vkCreateInstance(&instance_ci, nullptr, &instance), "Instance", "vkCreateInstance");
 
 #ifdef _DEBUG
     create_debug_messenger();
@@ -110,8 +109,7 @@ void Instance::create_debug_messenger()
 
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
 
-    if (vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger) != VK_SUCCESS)
-        logger::error("Instance: vkCreateDebugUtilsMessengerEXT failed");
+    chk(vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger), "Instance", "vkCreateDebugUtilsMessengerEXT");
 }
 
 void Instance::destroy_debug_messenger()
@@ -125,9 +123,9 @@ void Instance::validate_layers()
     logger::trace("Instance: checking validation layer support");
 
     uint32_t layer_count = 0;
-    vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+    chk(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), "Instance", "vkEnumerateInstanceLayerProperties");
     std::vector<VkLayerProperties> available_layers(layer_count);
-    vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
+    chk(vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data()), "Instance", "vkEnumerateInstanceLayerProperties");
 
     for (const char*& layer_name : requested_layers)
     {
@@ -148,9 +146,9 @@ void Instance::validate_extensions()
     logger::trace("Instance: checking extension support");
 
     uint32_t extension_count = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
+    chk(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr), "Instance", "vkEnumerateInstanceExtensionProperties");
     std::vector<VkExtensionProperties> available_extensions(extension_count);
-    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data());
+    chk(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data()), "Instance", "vkEnumerateInstanceExtensionProperties");
 
     for (const char*& extension_name : requested_extensions)
     {

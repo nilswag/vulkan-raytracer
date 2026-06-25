@@ -24,24 +24,18 @@ static VkBool32 debug_messenger_callback(
     if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
         message_type_str = "PERFORMANCE";
 
-    switch (message_severity)
-    {
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+
+    if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
         logger::trace("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
 
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
         logger::debug("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
-        
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
 
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
         logger::error("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
-    }
 
     return VK_FALSE;
 }

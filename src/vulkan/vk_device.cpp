@@ -24,30 +24,9 @@ Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std:
 {
     logger::debug("Device: initializing");
 
-    VkPhysicalDeviceProperties2 physical_device_properties = {};
-    physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-    physical_device_properties.pNext = nullptr;
-    vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
-    logger::info("Device: using '{}'", physical_device_properties.properties.deviceName);
-
-    VkDeviceQueueCreateInfo queue_ci = create_queue_family_ci();
-
-    VkPhysicalDeviceFeatures enabled_vk10_features = {};
-
-    VkPhysicalDeviceVulkan12Features enabled_vk12_features = {};
-    enabled_vk12_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-    enabled_vk12_features.descriptorIndexing = true;
-    enabled_vk12_features.shaderSampledImageArrayNonUniformIndexing = true;
-    enabled_vk12_features.descriptorBindingVariableDescriptorCount = true;
-    enabled_vk12_features.runtimeDescriptorArray = true;
-    enabled_vk12_features.bufferDeviceAddress = true;
-
-    VkPhysicalDeviceVulkan13Features enabled_vk13_features = {};
-    enabled_vk13_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
-    enabled_vk13_features.pNext = &enabled_vk12_features;
-    enabled_vk13_features.synchronization2 = true;
-    enabled_vk13_features.dynamicRendering = true;
-
+    create_physical_device();
+    create_logical_device();
+    
     logger::debug("Device: initialized");
 }
 
@@ -80,4 +59,41 @@ VkDeviceQueueCreateInfo Device::create_queue_family_ci()
     queue_ci.pQueuePriorities = nullptr;
 
     return queue_ci;
+}
+
+void Device::create_physical_device()
+{
+    logger::trace("Device: creating physical device");
+
+    VkPhysicalDeviceProperties2 physical_device_properties = {};
+    physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+    physical_device_properties.pNext = nullptr;
+    vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
+    logger::info("Device: using '{}'", physical_device_properties.properties.deviceName);
+}
+
+void Device::create_logical_device()
+{
+    logger::trace("Device: creating logical device");
+    
+    VkPhysicalDeviceFeatures enabled_vk10_features = {};
+    enabled_vk10_features.samplerAnisotropy = VK_TRUE;
+
+    VkPhysicalDeviceVulkan12Features enabled_vk12_features = {};
+    enabled_vk12_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    enabled_vk12_features.descriptorIndexing = true;
+    enabled_vk12_features.shaderSampledImageArrayNonUniformIndexing = true;
+    enabled_vk12_features.descriptorBindingVariableDescriptorCount = true;
+    enabled_vk12_features.runtimeDescriptorArray = true;
+    enabled_vk12_features.bufferDeviceAddress = true;
+
+    VkPhysicalDeviceVulkan13Features enabled_vk13_features = {};
+    enabled_vk13_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+    enabled_vk13_features.pNext = &enabled_vk12_features;
+    enabled_vk13_features.synchronization2 = true;
+    enabled_vk13_features.dynamicRendering = true;
+
+    VkDeviceQueueCreateInfo queue_ci = create_queue_family_ci();
+
+    VkDeviceCreateInfo device_ci = {};
 }

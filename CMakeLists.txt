@@ -20,12 +20,14 @@ set(SOURCES
 	src/main.cpp
 	src/vulkan/vk_app.cpp
 	src/vulkan/vk_instance.cpp
+	src/vulkan/vk_device.cpp
 )
 
 set(HEADERS
 	src/util/log.h
 	src/vulkan/vk_app.h
 	src/vulkan/vk_instance.h
+	src/vulkan/vk_device.h
 )
 
 # ------------------------------

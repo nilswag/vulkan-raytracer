@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "vk_app.h"
 #include "vk_instance.h"
+#include "vk_device.h"
 #include "../util/log.h"
 
 App::App(const AppInfo& app_info)
@@ -21,6 +22,8 @@ App::App(const AppInfo& app_info)
         logger::fatal("App: glfwCreateWindow failed");
 
     instance.init(app_info);
+
+    Device::get_device(instance, 0);
 
     logger::debug("App: initialized");
 }

@@ -24,24 +24,18 @@ static VkBool32 debug_messenger_callback(
     if (message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
         message_type_str = "PERFORMANCE";
 
-    switch (message_severity)
-    {
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+
+    if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
         logger::trace("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
 
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
         logger::debug("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
-        
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
 
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+
+    else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
         logger::error("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
-        break;
-    }
 
     return VK_FALSE;
 }
@@ -54,7 +48,7 @@ void Instance::init(const AppInfo& app_info)
     vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     vk_app_info.pApplicationName = app_info.title.c_str();
     vk_app_info.pEngineName = "No engine";
-    vk_app_info.apiVersion = VK_API_VERSION_1_4;
+    vk_app_info.apiVersion = VK_API_VERSION_1_3;
 
     uint32_t glfw_extensions_count = 0;
     const char** glfw_extensions_ptr = glfwGetRequiredInstanceExtensions(&glfw_extensions_count);

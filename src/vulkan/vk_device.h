@@ -10,7 +10,7 @@ public:
 
 private:
     Device(Instance& instance, VkPhysicalDevice& physical_device, const std::vector<const char*>&);
-    VkDeviceQueueCreateInfo create_queue_family_ci(uint32_t& queue_family);
+    VkDeviceQueueCreateInfo get_queue_family_ci(uint32_t& queue_family);
     void create_physical_device();
     void create_logical_device();
 

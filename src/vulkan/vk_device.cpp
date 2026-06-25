@@ -35,7 +35,7 @@ Device::~Device()
     vkDestroyDevice(logical_device, nullptr);
 }
 
-VkDeviceQueueCreateInfo Device::create_queue_family_ci(uint32_t& queue_family)
+VkDeviceQueueCreateInfo Device::get_queue_family_ci(uint32_t& queue_family)
 {
     logger::trace("Device: creating queue family");
 
@@ -97,7 +97,7 @@ void Device::create_logical_device()
     enabled_vk13_features.dynamicRendering = true;
 
     uint32_t queue_family;
-    VkDeviceQueueCreateInfo queue_ci = create_queue_family_ci(queue_family);
+    VkDeviceQueueCreateInfo queue_ci = get_queue_family_ci(queue_family);
     const float queue_priorities = 1.0f;
     queue_ci.pQueuePriorities = &queue_priorities;
 

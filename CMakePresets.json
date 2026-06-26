@@ -7,12 +7,12 @@
   "configurePresets": [
     {
       "name": "debug",
-      "binaryDir": "build",
+      "binaryDir": "build/debug",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "release",
-      "binaryDir": "build",
+      "binaryDir": "build/release",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],

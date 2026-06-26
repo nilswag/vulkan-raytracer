@@ -33,6 +33,7 @@ Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std:
 Device::~Device()
 {
     vkDestroyDevice(logical_device, nullptr);
+    logger::debug("Device: deinitialized");
 }
 
 VkDeviceQueueCreateInfo Device::get_queue_family_ci(uint32_t& queue_family)

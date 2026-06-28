@@ -11,7 +11,7 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		if (e.what() != nullptr) logger::Debug("{}", e.what());
+		if (e.what() != nullptr) LOG_DEBUG("{}", e.what());
 		return EXIT_FAILURE;
 	}
 

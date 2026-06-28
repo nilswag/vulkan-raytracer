@@ -11,13 +11,13 @@ App::App(const AppInfo& app_info)
     height_ = app_info.height_;
 
     if (!glfwInit())
-        logger::Fatal("App: glfwInit failed");
+        LOG_FATAL("App: glfwInit failed");
     glfwWindowHint(GLFW_NO_API, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window_ = glfwCreateWindow(width_, height_, app_info.title_.c_str(), nullptr, nullptr);
     if (window_ == nullptr)
-        logger::Fatal("App: glfwCreateWindow failed");
+        LOG_FATAL("App: glfwCreateWindow failed");
 
     instance_.Init(app_info);
 
@@ -32,7 +32,7 @@ App::~App()
 
 void App::Run()
 {
-    logger::Trace("App: entering main loop");
+    LOG_TRACE("App: entering main loop");
 
     double last = glfwGetTime();
     double timer = 0.0;
@@ -49,7 +49,7 @@ void App::Run()
         timer += dt_;
         if (timer >= 1.0)
         {
-            logger::Info("DT = {:.3f} ms, FPS = {:.1f}", dt_ * 1000.0, 1.0 / dt_);
+            LOG_INFO("DT = {:.3f} ms, FPS = {:.1f}", dt_ * 1000.0, 1.0 / dt_);
             timer -= 1.0;
         }
 

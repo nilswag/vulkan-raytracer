@@ -3,6 +3,7 @@
 #include <print>
 #include <format>
 #include <ctime>
+#include <source_location>
 #include <vulkan/vulkan.h>
 
 namespace logger
@@ -18,7 +19,7 @@ namespace logger
      };
 
      template<typename... Args>
-     inline void Out(const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
+     inline void Out(const std::source_location& source_location, const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
      {
           #ifndef _DEBUG
           if (level > LogLevel::INFO)
@@ -57,47 +58,57 @@ namespace logger
                std::format(msg, std::forward<Args>(args)...)
           );
      }
-
-     template<typename... Args>
-     inline void Fatal(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Fatal, msg, std::forward<Args>(args)...);
-          throw std::exception();
-     }
-
-     template<typename... Args>
-     inline void Error(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Error, msg, std::forward<Args>(args)...);
-     }
-
-     template<typename... Args>
-     inline void Warn(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Warn, msg, std::forward<Args>(args)...);
-     }
-
-     template<typename... Args>
-     inline void Info(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Info, msg, std::forward<Args>(args)...);
-     }
-
-     template<typename... Args>
-     inline void Debug(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Debug, msg, std::forward<Args>(args)...);
-     }
-
-     template<typename... Args>
-     inline void Trace(const std::format_string<Args...> msg, Args&&... args)
-     {
-          Out(LogLevel::Trace, msg, std::forward<Args>(args)...);
-     }
 }
 
-static inline void VkCheck(const VkResult& result, const std::string& prefix, const std::string& func_name)
+#define LOG_FATAL(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Fatal, __VA_ARGS__)
+
+#define LOG_ERROR(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Error, __VA_ARGS__)
+
+#define LOG_WARN(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Warn, __VA_ARGS__)
+
+#define LOG_INFO(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Info, __VA_ARGS__)
+
+#define LOG_DEBUG(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Debug, __VA_ARGS__)
+
+#define LOG_TRACE(...) \
+     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Trace, __VA_ARGS__)
+
+inline constexpr std::string VkResultToString(VkResult result)
 {
-     if (result < VK_SUCCESS)
-          logger::Error("{}: {} failed", prefix, func_name);
+    switch (result)
+    {
+    case VK_SUCCESS: return "VK_SUCCESS";
+    case VK_NOT_READY: return "VK_NOT_READY";
+    case VK_TIMEOUT: return "VK_TIMEOUT";
+    case VK_EVENT_SET: return "VK_EVENT_SET";
+    case VK_EVENT_RESET: return "VK_EVENT_RESET";
+    case VK_INCOMPLETE: return "VK_INCOMPLETE";
+
+    case VK_ERROR_OUT_OF_HOST_MEMORY: return "VK_ERROR_OUT_OF_HOST_MEMORY";
+    case VK_ERROR_OUT_OF_DEVICE_MEMORY: return "VK_ERROR_OUT_OF_DEVICE_MEMORY";
+    case VK_ERROR_INITIALIZATION_FAILED: return "VK_ERROR_INITIALIZATION_FAILED";
+    case VK_ERROR_DEVICE_LOST: return "VK_ERROR_DEVICE_LOST";
+    case VK_ERROR_MEMORY_MAP_FAILED: return "VK_ERROR_MEMORY_MAP_FAILED";
+    case VK_ERROR_LAYER_NOT_PRESENT: return "VK_ERROR_LAYER_NOT_PRESENT";
+    case VK_ERROR_EXTENSION_NOT_PRESENT: return "VK_ERROR_EXTENSION_NOT_PRESENT";
+    case VK_ERROR_FEATURE_NOT_PRESENT: return "VK_ERROR_FEATURE_NOT_PRESENT";
+    case VK_ERROR_INCOMPATIBLE_DRIVER: return "VK_ERROR_INCOMPATIBLE_DRIVER";
+    case VK_ERROR_TOO_MANY_OBJECTS: return "VK_ERROR_TOO_MANY_OBJECTS";
+    case VK_ERROR_FORMAT_NOT_SUPPORTED: return "VK_ERROR_FORMAT_NOT_SUPPORTED";
+
+    default:
+        return "UNKNOWN_VK_RESULT";
+    }
 }
+
+#define VK_CHECK(expr, ...) do {                                      \
+     if (expr != VK_SUCCESS)                                        \
+     {                                                                \
+          LOG_ERROR("{} failed: {}", #expr, VkResultToString(expr));  \
+     }                                                                \
+} while (false)

@@ -7,12 +7,12 @@
 Device Device::GetDevice(Instance& instance, uint32_t index, const std::vector<const char*>& requested_device_extensions)
 {
     uint32_t device_count = 0;
-    VkCheck(vkEnumeratePhysicalDevices(instance.Get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
+    VK_CHECK(vkEnumeratePhysicalDevices(instance.Get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
     std::vector<VkPhysicalDevice> physical_devices(device_count);
-    VkCheck(vkEnumeratePhysicalDevices(instance.Get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
+    VK_CHECK(vkEnumeratePhysicalDevices(instance.Get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
 
     if (index >= physical_devices.size())
-        logger::Fatal("Device: index out of bounds");
+        LOG_FATAL("Device: index out of bounds");
 
     return Device(instance, physical_devices[index], requested_device_extensions);
 }
@@ -46,7 +46,7 @@ VkDeviceQueueCreateInfo Device::GetQueueFamilyCI(uint32_t& queue_family)
         }
     }
     if (queue_family == UINT32_MAX)
-        logger::Error("Device: queue family flag unsupported 'VK_QUEUE_GRAPHICS_BIT'");
+        LOG_ERROR("Device: queue family flag unsupported 'VK_QUEUE_GRAPHICS_BIT'");
 
     VkDeviceQueueCreateInfo queue_ci = {};
     queue_ci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -62,7 +62,7 @@ void Device::CreatePhysicalDevice()
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     physical_device_properties.pNext = nullptr;
     vkGetPhysicalDeviceProperties2(physical_device_, &physical_device_properties);
-    logger::Info("Device: created physical device using '{}'", physical_device_properties.properties.deviceName);
+    LOG_INFO("Device: created physical device using '{}'", physical_device_properties.properties.deviceName);
 }
 
 void Device::CreateLogicalDevice()
@@ -98,7 +98,7 @@ void Device::CreateLogicalDevice()
     device_ci.ppEnabledExtensionNames = requested_device_extensions_.data();
     device_ci.pEnabledFeatures = &enabled_vk10_features;
 
-    VkCheck(vkCreateDevice(physical_device_, &device_ci, nullptr, &logical_device_), "Device", "vkCreateDevice");
+    VK_CHECK(vkCreateDevice(physical_device_, &device_ci, nullptr, &logical_device_), "Device", "vkCreateDevice");
     vkGetDeviceQueue(logical_device_, queue_family, 0, &queue_);
-    logger::Debug("Device: created logical device");
+    LOG_DEBUG("Device: created logical device");
 }

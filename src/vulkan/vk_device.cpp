@@ -62,7 +62,7 @@ void Device::CreatePhysicalDevice()
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     physical_device_properties.pNext = nullptr;
     vkGetPhysicalDeviceProperties2(physical_device_, &physical_device_properties);
-    LOG_INFO("Device: created physical device using '{}'", physical_device_properties.properties.deviceName);
+    LOG_DEBUG("Device: created physical device using '{}'", physical_device_properties.properties.deviceName);
 }
 
 void Device::CreateLogicalDevice()

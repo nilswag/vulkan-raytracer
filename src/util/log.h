@@ -22,7 +22,7 @@ namespace logger
      inline void Out(const std::string& file_name, int line, const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
      {
           #ifndef _DEBUG
-          if (level > LogLevel::INFO)
+          if (level > LogLevel::Info)
                return;
           #endif
 

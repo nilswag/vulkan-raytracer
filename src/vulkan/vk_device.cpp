@@ -6,8 +6,6 @@
 
 Device Device::GetDevice(Instance& instance, uint32_t index, const std::vector<const char*>& requested_device_extensions)
 {
-    logger::Trace("Device: creating device with index {}", index);
-
     uint32_t device_count = 0;
     VkCheck(vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
     std::vector<VkPhysicalDevice> physical_devices(device_count);
@@ -22,24 +20,17 @@ Device Device::GetDevice(Instance& instance, uint32_t index, const std::vector<c
 Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std::vector<const char*>& requested_device_extensions)
     : physical_device_(physical_device), requested_device_extensions_(requested_device_extensions)
 {
-    logger::Debug("Device: initializing");
-
     CreatePhysicalDevice();
-    CreateLogicalDevice();
-    
-    logger::Debug("Device: initialized");
+    CreateLogicalDevice();    
 }
 
 Device::~Device()
 {
     vkDestroyDevice(logical_device_, nullptr);
-    logger::Debug("Device: deinitialized");
 }
 
 VkDeviceQueueCreateInfo Device::GetQueueFamilyCI(uint32_t& queue_family)
 {
-    logger::Trace("Device: creating queue family");
-
     uint32_t queue_family_count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physical_device_, &queue_family_count, nullptr);
     std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
@@ -67,19 +58,15 @@ VkDeviceQueueCreateInfo Device::GetQueueFamilyCI(uint32_t& queue_family)
 
 void Device::CreatePhysicalDevice()
 {
-    logger::Trace("Device: creating physical device");
-
     VkPhysicalDeviceProperties2 physical_device_properties = {};
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     physical_device_properties.pNext = nullptr;
     vkGetPhysicalDeviceProperties2(physical_device_, &physical_device_properties);
-    logger::Info("Device: using '{}'", physical_device_properties.properties.deviceName);
+    logger::Info("Device: created physical device using '{}'", physical_device_properties.properties.deviceName);
 }
 
 void Device::CreateLogicalDevice()
-{
-    logger::Trace("Device: creating logical device");
-    
+{    
     VkPhysicalDeviceFeatures enabled_vk10_features = {};
     enabled_vk10_features.samplerAnisotropy = VK_TRUE;
 
@@ -113,4 +100,5 @@ void Device::CreateLogicalDevice()
 
     VkCheck(vkCreateDevice(physical_device_, &device_ci, nullptr, &logical_device_), "Device", "vkCreateDevice");
     vkGetDeviceQueue(logical_device_, queue_family, 0, &queue_);
+    logger::Debug("Device: created logical device");
 }

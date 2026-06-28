@@ -7,8 +7,6 @@
 
 App::App(const AppInfo& app_info)
 {
-    logger::Debug("App: initializing");
-
     width_ = app_info.width_;
     height_ = app_info.height_;
 
@@ -24,15 +22,12 @@ App::App(const AppInfo& app_info)
     instance_.init(app_info);
 
     Device device = Device::get_device(instance_, 0, std::vector<const char*> { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
-
-    logger::Debug("App: initialized");
 }
 
 App::~App()
 {
     glfwDestroyWindow(window_);
     glfwTerminate();
-    logger::Debug("App: deinitialized");
 }
 
 void App::Run()

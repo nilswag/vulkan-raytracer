@@ -19,7 +19,7 @@ namespace logger
      };
 
      template<typename... Args>
-     inline void Out(const std::source_location& source_location, const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
+     inline void Out(const char* file_name, int line, const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
      {
           #ifndef _DEBUG
           if (level > LogLevel::INFO)
@@ -49,34 +49,36 @@ namespace logger
 #pragma warning(pop)
 #endif
 
-          std::println("{:02}:{:02}:{:02} {}{:<7} {}\033[0m", 
+          std::println("{:02}:{:02}:{:02} {}:{} {}{:<7} {}\033[0m", 
                local_time->tm_hour,
                local_time->tm_min,
                local_time->tm_sec,
+               file_name,
+               line,
                color,
-               label, 
+               label,
                std::format(msg, std::forward<Args>(args)...)
           );
      }
 }
 
 #define LOG_FATAL(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Fatal, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Fatal, __VA_ARGS__)
 
 #define LOG_ERROR(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Error, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Error, __VA_ARGS__)
 
 #define LOG_WARN(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Warn, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Warn, __VA_ARGS__)
 
 #define LOG_INFO(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Info, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Info, __VA_ARGS__)
 
 #define LOG_DEBUG(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Debug, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Debug, __VA_ARGS__)
 
 #define LOG_TRACE(...) \
-     ::logger::Out(std::source_location::current(), ::logger::LogLevel::Trace, __VA_ARGS__)
+     ::logger::Out(__FILE_NAME__, __LINE__, ::logger::LogLevel::Trace, __VA_ARGS__)
 
 inline constexpr std::string VkResultToString(VkResult result)
 {

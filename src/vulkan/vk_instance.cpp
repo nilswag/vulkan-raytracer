@@ -44,7 +44,7 @@ void Instance::init(const AppInfo& app_info)
     
     VkApplicationInfo vk_app_info = {};
     vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    vk_app_info.pApplicationName = app_info.title.c_str();
+    vk_app_info.pApplicationName = app_info.title_.c_str();
     vk_app_info.pEngineName = "No engine";
     vk_app_info.apiVersion = VK_API_VERSION_1_3;
 

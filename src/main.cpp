@@ -6,8 +6,8 @@ int main()
 {
 	try
 	{
-		App app({ .width = 1000, .height = 1000, .title = "Vulkan Raytracer" });
-		app.run();
+		App app({ .width_ = 1000, .height_ = 1000, .title_ = "Vulkan Raytracer" });
+		app.Run();
 	}
 	catch (const std::exception& e)
 	{

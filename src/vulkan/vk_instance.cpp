@@ -7,7 +7,7 @@
 #include "vk_app.h"
 #include "../util/log.h"
 
-static VkBool32 debug_messenger_callback(
+static VkBool32 DebugMessengerCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
     VkDebugUtilsMessageTypeFlagsEXT message_type,
     const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
@@ -39,9 +39,7 @@ static VkBool32 debug_messenger_callback(
 }
 
 void Instance::Init(const AppInfo& app_info)
-{
-    logger::Debug("Instance: initializing");
-    
+{    
     VkApplicationInfo vk_app_info = {};
     vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     vk_app_info.pApplicationName = app_info.title_.c_str();
@@ -76,8 +74,6 @@ void Instance::Init(const AppInfo& app_info)
 #ifdef _DEBUG
     CreateDebugMessenger();
 #endif
-
-    logger::Debug("Instance: initialized");
 }
 
 Instance::~Instance()
@@ -87,7 +83,6 @@ Instance::~Instance()
 #endif
 
     vkDestroyInstance(instance_, nullptr);
-    logger::Debug("Instance: deinitialized");
 }
 
 void Instance::CreateDebugMessenger()
@@ -103,7 +98,7 @@ void Instance::CreateDebugMessenger()
     debug_messenger_ci.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                                    | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
                                    | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debug_messenger_ci.pfnUserCallback = debug_messenger_callback;
+    debug_messenger_ci.pfnUserCallback = DebugMessengerCallback;
 
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance_, "vkCreateDebugUtilsMessengerEXT"));
 

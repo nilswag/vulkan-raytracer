@@ -38,7 +38,7 @@ static VkBool32 debug_messenger_callback(
     return VK_FALSE;
 }
 
-void Instance::init(const AppInfo& app_info)
+void Instance::Init(const AppInfo& app_info)
 {
     logger::Debug("Instance: initializing");
     
@@ -50,31 +50,31 @@ void Instance::init(const AppInfo& app_info)
 
     uint32_t glfw_extensions_count = 0;
     const char** glfw_extensions_ptr = glfwGetRequiredInstanceExtensions(&glfw_extensions_count);
-    requested_extensions.insert(requested_extensions.end(), glfw_extensions_ptr, glfw_extensions_ptr + glfw_extensions_count);
+    requested_extensions_.insert(requested_extensions_.end(), glfw_extensions_ptr, glfw_extensions_ptr + glfw_extensions_count);
 
 #ifdef _DEBUG
-    requested_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    requested_extensions_.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-    requested_layers.push_back("VK_LAYER_KHRONOS_validation");
+    requested_layers_.push_back("VK_LAYER_KHRONOS_validation");
 #endif
 
-    validate_extensions();
-    validate_layers();
+    ValidateExtensions();
+    ValidateLayers();
 
     VkInstanceCreateInfo instance_ci = {};
     instance_ci.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instance_ci.pApplicationInfo = &vk_app_info;
-    instance_ci.enabledExtensionCount = static_cast<uint32_t>(requested_extensions.size());
-    instance_ci.ppEnabledExtensionNames = requested_extensions.data();
+    instance_ci.enabledExtensionCount = static_cast<uint32_t>(requested_extensions_.size());
+    instance_ci.ppEnabledExtensionNames = requested_extensions_.data();
 #ifdef _DEBUG
-    instance_ci.enabledLayerCount = static_cast<uint32_t>(requested_layers.size());
-    instance_ci.ppEnabledLayerNames = requested_layers.data();
+    instance_ci.enabledLayerCount = static_cast<uint32_t>(requested_layers_.size());
+    instance_ci.ppEnabledLayerNames = requested_layers_.data();
 #endif
 
-    VkCheck(vkCreateInstance(&instance_ci, nullptr, &instance), "Instance", "vkCreateInstance");
+    VkCheck(vkCreateInstance(&instance_ci, nullptr, &instance_), "Instance", "vkCreateInstance");
 
 #ifdef _DEBUG
-    create_debug_messenger();
+    CreateDebugMessenger();
 #endif
 
     logger::Debug("Instance: initialized");
@@ -83,14 +83,14 @@ void Instance::init(const AppInfo& app_info)
 Instance::~Instance()
 {
 #ifdef _DEBUG
-    destroy_debug_messenger();
+    DestroyDebugMessenger();
 #endif
 
-    vkDestroyInstance(instance, nullptr);
+    vkDestroyInstance(instance_, nullptr);
     logger::Debug("Instance: deinitialized");
 }
 
-void Instance::create_debug_messenger()
+void Instance::CreateDebugMessenger()
 {
     logger::Trace("Instance: creating debug messenger");
 
@@ -105,18 +105,18 @@ void Instance::create_debug_messenger()
                                    | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     debug_messenger_ci.pfnUserCallback = debug_messenger_callback;
 
-    PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+    PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance_, "vkCreateDebugUtilsMessengerEXT"));
 
-    VkCheck(vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger), "Instance", "vkCreateDebugUtilsMessengerEXT");
+    VkCheck(vkCreateDebugUtilsMessengerEXT(instance_, &debug_messenger_ci, nullptr, &debug_messenger_), "Instance", "vkCreateDebugUtilsMessengerEXT");
 }
 
-void Instance::destroy_debug_messenger()
+void Instance::DestroyDebugMessenger()
 {
-    PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));    
-    vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
+    PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance_, "vkDestroyDebugUtilsMessengerEXT"));    
+    vkDestroyDebugUtilsMessengerEXT(instance_, debug_messenger_, nullptr);
 }
 
-void Instance::validate_layers()
+void Instance::ValidateLayers()
 {
     logger::Trace("Instance: checking validation layer support");
 
@@ -125,7 +125,7 @@ void Instance::validate_layers()
     std::vector<VkLayerProperties> available_layers(layer_count);
     VkCheck(vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data()), "Instance", "vkEnumerateInstanceLayerProperties");
 
-    for (const char*& layer_name : requested_layers)
+    for (const char*& layer_name : requested_layers_)
     {
         if (std::find_if(available_layers.begin(), available_layers.end(), [layer_name](const VkLayerProperties& layer) {
             return std::strcmp(layer_name, layer.layerName) == 0;
@@ -139,7 +139,7 @@ void Instance::validate_layers()
     }
 }
 
-void Instance::validate_extensions()
+void Instance::ValidateExtensions()
 {
     logger::Trace("Instance: checking extension support");
 
@@ -148,7 +148,7 @@ void Instance::validate_extensions()
     std::vector<VkExtensionProperties> available_extensions(extension_count);
     VkCheck(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data()), "Instance", "vkEnumerateInstanceExtensionProperties");
 
-    for (const char*& extension_name : requested_extensions)
+    for (const char*& extension_name : requested_extensions_)
     {
         if (std::find_if(available_extensions.begin(), available_extensions.end(), [extension_name](const VkExtensionProperties& extension) {
             return std::strcmp(extension_name, extension.extensionName) == 0;

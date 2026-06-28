@@ -7,9 +7,9 @@
 Device Device::GetDevice(Instance& instance, uint32_t index, const std::vector<const char*>& requested_device_extensions)
 {
     uint32_t device_count = 0;
-    VkCheck(vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
+    VkCheck(vkEnumeratePhysicalDevices(instance.Get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
     std::vector<VkPhysicalDevice> physical_devices(device_count);
-    VkCheck(vkEnumeratePhysicalDevices(instance.get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
+    VkCheck(vkEnumeratePhysicalDevices(instance.Get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
 
     if (index >= physical_devices.size())
         logger::Fatal("Device: index out of bounds");

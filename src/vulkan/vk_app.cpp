@@ -19,7 +19,7 @@ App::App(const AppInfo& app_info)
     if (window_ == nullptr)
         logger::Fatal("App: glfwCreateWindow failed");
 
-    instance_.init(app_info);
+    instance_.Init(app_info);
 
     Device device = Device::GetDevice(instance_, 0, std::vector<const char*> { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 }

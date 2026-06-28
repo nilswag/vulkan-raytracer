@@ -5,9 +5,9 @@
 
 struct AppInfo
 {
-    int width;
-    int height;
-    std::string title;
+    int width_;
+    int height_;
+    std::string title_;
 };
 
 class App
@@ -16,13 +16,13 @@ public:
     App(const AppInfo& app_info);
     ~App();
 
-    void run();
+    void Run();
 
 private:
-    Instance instance;
+    Instance instance_;
 
-    GLFWwindow* window = nullptr;
-    int width, height;
-    size_t ticks = 0;
-    double dt = 0.0;
+    GLFWwindow* window_;
+    int width_, height_;
+    size_t ticks_;
+    double dt_;
 };

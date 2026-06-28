@@ -7,20 +7,20 @@ struct AppInfo;
 class Instance
 {
 public:
-    void init(const AppInfo& app_info);
+    void Init(const AppInfo& app_info);
     ~Instance();
 
-    inline VkInstance get() const { return instance; }
+    inline VkInstance Get() const { return instance_; }
 
 private:
-    void create_debug_messenger();
-    void destroy_debug_messenger();
-    void validate_layers();
-    void validate_extensions();
+    void CreateDebugMessenger();
+    void DestroyDebugMessenger();
+    void ValidateLayers();
+    void ValidateExtensions();
 
-    std::vector<const char*> requested_layers;
-    std::vector<const char*> requested_extensions;
-    VkInstance instance;
+    std::vector<const char*> requested_layers_;
+    std::vector<const char*> requested_extensions_;
+    VkInstance instance_;
     
-    VkDebugUtilsMessengerEXT debug_messenger;
+    VkDebugUtilsMessengerEXT debug_messenger_;
 };

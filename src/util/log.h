@@ -9,16 +9,16 @@ namespace logger
 {
      enum class LogLevel
      {
-          FATAL,
-          ERROR,
-          WARN,
-          INFO,
-          DEBUG,
-          TRACE
+          Fatal,
+          Error,
+          Warn,
+          Info,
+          Debug,
+          Trace
      };
 
      template<typename... Args>
-     inline void out(const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
+     inline void Out(const LogLevel& level, const std::format_string<Args...> msg, Args&&... args)
      {
           #ifndef _DEBUG
           if (level > LogLevel::INFO)
@@ -29,12 +29,12 @@ namespace logger
           std::string label;
           switch (level)
           {
-               case LogLevel::FATAL: color = "\033[0;31m"; label = "[FATAL]"; break;
-               case LogLevel::ERROR: color = "\033[0;31m"; label = "[ERROR]"; break;
-               case LogLevel::WARN:  color = "\033[0;33m"; label = "[WARN]";  break;
-               case LogLevel::INFO:  color = "\033[0;37m"; label = "[INFO]";  break;
-               case LogLevel::DEBUG: color = "\033[0;36m"; label = "[DEBUG]"; break;
-               case LogLevel::TRACE: color = "\033[0;35m"; label = "[TRACE]"; break;
+               case LogLevel::Fatal: color = "\033[0;31m"; label = "[FATAL]"; break;
+               case LogLevel::Error: color = "\033[0;31m"; label = "[ERROR]"; break;
+               case LogLevel::Warn:  color = "\033[0;33m"; label = "[WARN]";  break;
+               case LogLevel::Info:  color = "\033[0;37m"; label = "[INFO]";  break;
+               case LogLevel::Debug: color = "\033[0;36m"; label = "[DEBUG]"; break;
+               case LogLevel::Trace: color = "\033[0;35m"; label = "[TRACE]"; break;
           }
           
           const std::time_t now = std::time(nullptr);
@@ -59,45 +59,45 @@ namespace logger
      }
 
      template<typename... Args>
-     inline void fatal(const std::format_string<Args...> msg, Args&&... args)
+     inline void Fatal(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::FATAL, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Fatal, msg, std::forward<Args>(args)...);
           throw std::exception();
      }
 
      template<typename... Args>
-     inline void error(const std::format_string<Args...> msg, Args&&... args)
+     inline void Error(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::ERROR, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Error, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
-     inline void warn(const std::format_string<Args...> msg, Args&&... args)
+     inline void Warn(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::WARN, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Warn, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
-     inline void info(const std::format_string<Args...> msg, Args&&... args)
+     inline void Info(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::INFO, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Info, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
-     inline void debug(const std::format_string<Args...> msg, Args&&... args)
+     inline void Debug(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::DEBUG, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Debug, msg, std::forward<Args>(args)...);
      }
 
      template<typename... Args>
-     inline void trace(const std::format_string<Args...> msg, Args&&... args)
+     inline void Trace(const std::format_string<Args...> msg, Args&&... args)
      {
-          out(LogLevel::TRACE, msg, std::forward<Args>(args)...);
+          Out(LogLevel::Trace, msg, std::forward<Args>(args)...);
      }
 }
 
-static inline void chk(const VkResult& result, const std::string& prefix, const std::string& func_name)
+static inline void VkCheck(const VkResult& result, const std::string& prefix, const std::string& func_name)
 {
      if (result < VK_SUCCESS)
-          logger::error("{}: {} failed", prefix, func_name);
+          logger::Error("{}: {} failed", prefix, func_name);
 }

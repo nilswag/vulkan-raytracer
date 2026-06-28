@@ -6,15 +6,15 @@
 
 Device Device::get_device(Instance& instance, uint32_t index, const std::vector<const char*>& requested_device_extensions)
 {
-    logger::trace("Device: creating device with index {}", index);
+    logger::Trace("Device: creating device with index {}", index);
 
     uint32_t device_count = 0;
-    chk(vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
+    VkCheck(vkEnumeratePhysicalDevices(instance.get(), &device_count, nullptr), "Device", "vkEnumeratePhysicalDevices");
     std::vector<VkPhysicalDevice> physical_devices(device_count);
-    chk(vkEnumeratePhysicalDevices(instance.get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
+    VkCheck(vkEnumeratePhysicalDevices(instance.get(), &device_count, physical_devices.data()), "Device", "vkEnumeratePhysicalDevices");
 
     if (index >= physical_devices.size())
-        logger::fatal("Device: index out of bounds");
+        logger::Fatal("Device: index out of bounds");
 
     return Device(instance, physical_devices[index], requested_device_extensions);
 }
@@ -22,23 +22,23 @@ Device Device::get_device(Instance& instance, uint32_t index, const std::vector<
 Device::Device(Instance& instance, VkPhysicalDevice& physical_device, const std::vector<const char*>& requested_device_extensions)
     : physical_device(physical_device), requested_device_extensions(requested_device_extensions)
 {
-    logger::debug("Device: initializing");
+    logger::Debug("Device: initializing");
 
     create_physical_device();
     create_logical_device();
     
-    logger::debug("Device: initialized");
+    logger::Debug("Device: initialized");
 }
 
 Device::~Device()
 {
     vkDestroyDevice(logical_device, nullptr);
-    logger::debug("Device: deinitialized");
+    logger::Debug("Device: deinitialized");
 }
 
 VkDeviceQueueCreateInfo Device::get_queue_family_ci(uint32_t& queue_family)
 {
-    logger::trace("Device: creating queue family");
+    logger::Trace("Device: creating queue family");
 
     uint32_t queue_family_count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
@@ -55,7 +55,7 @@ VkDeviceQueueCreateInfo Device::get_queue_family_ci(uint32_t& queue_family)
         }
     }
     if (queue_family == UINT32_MAX)
-        logger::error("Device: queue family flag unsupported 'VK_QUEUE_GRAPHICS_BIT'");
+        logger::Error("Device: queue family flag unsupported 'VK_QUEUE_GRAPHICS_BIT'");
 
     VkDeviceQueueCreateInfo queue_ci = {};
     queue_ci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -67,18 +67,18 @@ VkDeviceQueueCreateInfo Device::get_queue_family_ci(uint32_t& queue_family)
 
 void Device::create_physical_device()
 {
-    logger::trace("Device: creating physical device");
+    logger::Trace("Device: creating physical device");
 
     VkPhysicalDeviceProperties2 physical_device_properties = {};
     physical_device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
     physical_device_properties.pNext = nullptr;
     vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
-    logger::info("Device: using '{}'", physical_device_properties.properties.deviceName);
+    logger::Info("Device: using '{}'", physical_device_properties.properties.deviceName);
 }
 
 void Device::create_logical_device()
 {
-    logger::trace("Device: creating logical device");
+    logger::Trace("Device: creating logical device");
     
     VkPhysicalDeviceFeatures enabled_vk10_features = {};
     enabled_vk10_features.samplerAnisotropy = VK_TRUE;
@@ -111,6 +111,6 @@ void Device::create_logical_device()
     device_ci.ppEnabledExtensionNames = requested_device_extensions.data();
     device_ci.pEnabledFeatures = &enabled_vk10_features;
 
-    chk(vkCreateDevice(physical_device, &device_ci, nullptr, &logical_device), "Device", "vkCreateDevice");
+    VkCheck(vkCreateDevice(physical_device, &device_ci, nullptr, &logical_device), "Device", "vkCreateDevice");
     vkGetDeviceQueue(logical_device, queue_family, 0, &queue);
 }

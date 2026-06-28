@@ -24,23 +24,23 @@ static VkBool32 debug_messenger_callback(
 
 
     if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-        logger::trace("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+        logger::Trace("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
 
     else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-        logger::debug("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+        logger::Debug("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
 
     else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-        logger::warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+        logger::Warn("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
 
     else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-        logger::error("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
+        logger::Error("Validation layer [{}]: {}", message_type_str, callback_data->pMessage);
 
     return VK_FALSE;
 }
 
 void Instance::init(const AppInfo& app_info)
 {
-    logger::debug("Instance: initializing");
+    logger::Debug("Instance: initializing");
     
     VkApplicationInfo vk_app_info = {};
     vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -71,13 +71,13 @@ void Instance::init(const AppInfo& app_info)
     instance_ci.ppEnabledLayerNames = requested_layers.data();
 #endif
 
-    chk(vkCreateInstance(&instance_ci, nullptr, &instance), "Instance", "vkCreateInstance");
+    VkCheck(vkCreateInstance(&instance_ci, nullptr, &instance), "Instance", "vkCreateInstance");
 
 #ifdef _DEBUG
     create_debug_messenger();
 #endif
 
-    logger::debug("Instance: initialized");
+    logger::Debug("Instance: initialized");
 }
 
 Instance::~Instance()
@@ -87,12 +87,12 @@ Instance::~Instance()
 #endif
 
     vkDestroyInstance(instance, nullptr);
-    logger::debug("Instance: deinitialized");
+    logger::Debug("Instance: deinitialized");
 }
 
 void Instance::create_debug_messenger()
 {
-    logger::trace("Instance: creating debug messenger");
+    logger::Trace("Instance: creating debug messenger");
 
     VkDebugUtilsMessengerCreateInfoEXT debug_messenger_ci = {};
     debug_messenger_ci.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -107,7 +107,7 @@ void Instance::create_debug_messenger()
 
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
 
-    chk(vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger), "Instance", "vkCreateDebugUtilsMessengerEXT");
+    VkCheck(vkCreateDebugUtilsMessengerEXT(instance, &debug_messenger_ci, nullptr, &debug_messenger), "Instance", "vkCreateDebugUtilsMessengerEXT");
 }
 
 void Instance::destroy_debug_messenger()
@@ -118,12 +118,12 @@ void Instance::destroy_debug_messenger()
 
 void Instance::validate_layers()
 {
-    logger::trace("Instance: checking validation layer support");
+    logger::Trace("Instance: checking validation layer support");
 
     uint32_t layer_count = 0;
-    chk(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), "Instance", "vkEnumerateInstanceLayerProperties");
+    VkCheck(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), "Instance", "vkEnumerateInstanceLayerProperties");
     std::vector<VkLayerProperties> available_layers(layer_count);
-    chk(vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data()), "Instance", "vkEnumerateInstanceLayerProperties");
+    VkCheck(vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data()), "Instance", "vkEnumerateInstanceLayerProperties");
 
     for (const char*& layer_name : requested_layers)
     {
@@ -131,22 +131,22 @@ void Instance::validate_layers()
             return std::strcmp(layer_name, layer.layerName) == 0;
         }) == available_layers.end())
         {
-            logger::warn("Instance: validation layer '{}' not found", layer_name);
+            logger::Warn("Instance: validation layer '{}' not found", layer_name);
             continue;
         }
 
-        logger::debug("Instance: validation layer '{}' supported", layer_name);
+        logger::Debug("Instance: validation layer '{}' supported", layer_name);
     }
 }
 
 void Instance::validate_extensions()
 {
-    logger::trace("Instance: checking extension support");
+    logger::Trace("Instance: checking extension support");
 
     uint32_t extension_count = 0;
-    chk(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr), "Instance", "vkEnumerateInstanceExtensionProperties");
+    VkCheck(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr), "Instance", "vkEnumerateInstanceExtensionProperties");
     std::vector<VkExtensionProperties> available_extensions(extension_count);
-    chk(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data()), "Instance", "vkEnumerateInstanceExtensionProperties");
+    VkCheck(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, available_extensions.data()), "Instance", "vkEnumerateInstanceExtensionProperties");
 
     for (const char*& extension_name : requested_extensions)
     {
@@ -154,10 +154,10 @@ void Instance::validate_extensions()
             return std::strcmp(extension_name, extension.extensionName) == 0;
         }) == available_extensions.end())
         {
-            logger::warn("Instance: extension '{}' not found", extension_name);
+            logger::Warn("Instance: extension '{}' not found", extension_name);
             continue;
         }
 
-        logger::debug("Instance: extension '{}' supported", extension_name);
+        logger::Debug("Instance: extension '{}' supported", extension_name);
     }
 }

@@ -7,37 +7,37 @@
 
 App::App(const AppInfo& app_info)
 {
-    logger::debug("App: initializing");
+    logger::Debug("App: initializing");
 
     width = app_info.width;
     height = app_info.height;
 
     if (!glfwInit())
-        logger::fatal("App: glfwInit failed");
+        logger::Fatal("App: glfwInit failed");
     glfwWindowHint(GLFW_NO_API, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(width, height, app_info.title.c_str(), nullptr, nullptr);
     if (window == nullptr)
-        logger::fatal("App: glfwCreateWindow failed");
+        logger::Fatal("App: glfwCreateWindow failed");
 
     instance.init(app_info);
 
     Device device = Device::get_device(instance, 0, std::vector<const char*> { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 
-    logger::debug("App: initialized");
+    logger::Debug("App: initialized");
 }
 
 App::~App()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
-    logger::debug("App: deinitialized");
+    logger::Debug("App: deinitialized");
 }
 
 void App::run()
 {
-    logger::trace("App: entering main loop");
+    logger::Trace("App: entering main loop");
 
     double last = glfwGetTime();
     double timer = 0.0;
@@ -54,7 +54,7 @@ void App::run()
         timer += dt;
         if (timer >= 1.0)
         {
-            logger::info("DT = {:.3f} ms, FPS = {:.1f}", dt * 1000.0, 1.0 / dt);
+            logger::Info("DT = {:.3f} ms, FPS = {:.1f}", dt * 1000.0, 1.0 / dt);
             timer -= 1.0;
         }
 

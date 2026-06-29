@@ -3,7 +3,6 @@
 #include <print>
 #include <format>
 #include <ctime>
-#include <source_location>
 #include <vulkan/vulkan.h>
 
 namespace logger

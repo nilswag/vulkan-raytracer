@@ -7,6 +7,12 @@ project(vulkan-raytracer)
 set(CMAKE_CXX_STANDARD 			23)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+
+# ------------------------------
+# Compile commands
+# ------------------------------
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # ------------------------------
 # dependencies
 # ------------------------------

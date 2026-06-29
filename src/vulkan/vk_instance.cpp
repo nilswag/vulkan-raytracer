@@ -74,6 +74,8 @@ void Instance::Init(const AppInfo& app_info)
 #ifdef _DEBUG
     CreateDebugMessenger();
 #endif
+
+    LOG_DEBUG("Instance: created instance");
 }
 
 Instance::~Instance()
